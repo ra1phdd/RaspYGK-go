@@ -9,8 +9,9 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"go.uber.org/zap"
+
 	colly "github.com/gocolly/colly/v2"
+	"go.uber.org/zap"
 )
 
 const (
@@ -24,6 +25,7 @@ func Parser() error {
 
 	for i, url := range urls {
 		data, date, id_week, type_week, err := DataProcessing(url)
+		logger.Debug("Дата в цикле", zap.String("date", date))
 		if err != nil {
 			return handleError("ошибка при обработке данных замен", err)
 		}
@@ -58,6 +60,7 @@ func DataProcessing(url string) ([][]string, string, int, string, error) {
 
 	// Нахождение даты
 	c.OnHTML("div > div:nth-of-type(2)", func(e *colly.HTMLElement) {
+		logger.Debug("Получение string с датой", zap.String("text", e.Text))
 		text := e.Text
 
 		search := []string{"в расписании на ", " года / ", "понедельник", "вторник", "среда", "четверг", "пятница", "суббота"}
@@ -65,6 +68,8 @@ func DataProcessing(url string) ([][]string, string, int, string, error) {
 		for _, s := range search {
 			text = strings.Replace(text, s, "", -1)
 		}
+
+		logger.Debug("Обработанный string с датой", zap.String("text", text))
 
 		months := map[string]string{
 			"января":   "01",
@@ -85,9 +90,11 @@ func DataProcessing(url string) ([][]string, string, int, string, error) {
 			text = strings.Replace(text, month, number, -1)
 		}
 
+		logger.Debug("Замена месяца в дате на числовой формат", zap.String("text", text))
+
 		text = strings.Replace(text, " ", ".", -1)
 
-		t, _ := time.Parse("02.01.2006", text)
+		t, _ := time.Parse("2.01.2006", text)
 		date = t.Format("2006-01-02")
 
 		week := t.Weekday()
@@ -208,6 +215,7 @@ func InsertData(data [][]string, date string, id_week int, type_week string, id_
 			query = fmt.Sprintf(`UPDATE arrays SET %s = $1, idweek = $2, typeweek = $3 WHERE date = $4`, column)
 		}
 
+		logger.Debug("Запрос к БД", zap.String("query", query))
 		_, err := Conn.Exec(query, hashData, id_week, type_week, date)
 		if err != nil {
 			return false, handleError("ошибка при обновлении к БД arrays", err)
