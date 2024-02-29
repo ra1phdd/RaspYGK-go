@@ -205,42 +205,41 @@ func InsertData(data [][]string, date string, id_week int, type_week string, id_
 
 	logger.Debug("Полученные данные из БД", zap.String("result_first", result_first.String), zap.String("result_second", result_second.String))
 
-	if !result_first.Valid || !result_second.Valid || (column == "result_first" && result_first.String != hashData) || (column == "result_second" && result_second.String != hashData) {
-		var query string
-		if !result_first.Valid && !result_second.Valid {
-			logger.Debug("Добавление хеша в таблицу arrays", zap.String("column", column))
-			query = fmt.Sprintf(`INSERT INTO arrays (%s, idweek, typeweek, date) VALUES ($1, $2, $3, $4)`, column)
-		} else {
-			logger.Debug("Обновление существующего хеша в таблице arrays", zap.String("column", column))
-			query = fmt.Sprintf(`UPDATE arrays SET %s = $1, idweek = $2, typeweek = $3 WHERE date = $4`, column)
-		}
-
-		logger.Debug("Запрос к БД", zap.String("query", query))
-		_, err := Conn.Exec(query, hashData, id_week, type_week, date)
-		if err != nil {
-			return false, handleError("ошибка при обновлении к БД arrays", err)
-		}
-
-		if result_first.Valid || result_second.Valid {
-			logger.Debug("Удаление всех замен из таблицы replaces", zap.String("date", date), zap.Int("id_shift", id_shift))
-			_, err = Conn.Exec(`DELETE FROM replaces WHERE date = $1 AND idshift = $2`, date, id_shift)
-			if err != nil {
-				return false, handleError("ошибка при удалении к БД replaces", err)
-			}
-		}
-
-		logger.Debug("Добавление замен в таблицу replaces", zap.Any("data", data))
-		for _, item := range data {
-			_, err := Conn.Exec(`INSERT INTO replaces ("group", lesson, discipline_rasp, discipline_replace, classroom, date, idshift) VALUES ($1, $2, $3, $4, $5, $6, $7)`, item[1], item[2], item[3], item[4], item[5], date, id_shift)
-			if err != nil {
-				return false, handleError("ошибка при вставке в БД replaces", err)
-			}
-		}
-
-		return true, nil
+	var query string
+	if !result_first.Valid && !result_second.Valid {
+		logger.Debug("Добавление хеша в таблицу arrays", zap.String("column", column))
+		query = fmt.Sprintf(`INSERT INTO arrays (%s, idweek, typeweek, date) VALUES ($1, $2, $3, $4)`, column)
+	} else if (column == "result_first" && result_first.String != hashData) || (column == "result_second" && result_second.String != hashData) {
+		logger.Debug("Обновление существующего хеша в таблице arrays", zap.String("column", column))
+		query = fmt.Sprintf(`UPDATE arrays SET %s = $1, idweek = $2, typeweek = $3 WHERE date = $4`, column)
+	} else {
+		logger.Debug("Хеш совпадает, пропуск")
+		return false, nil
 	}
 
-	return false, nil
+	logger.Debug("Запрос к БД", zap.String("query", query))
+	_, err = Conn.Exec(query, hashData, id_week, type_week, date)
+	if err != nil {
+		return false, handleError("ошибка при обновлении к БД arrays", err)
+	}
+
+	if result_first.Valid || result_second.Valid {
+		logger.Debug("Удаление всех замен из таблицы replaces", zap.String("date", date), zap.Int("id_shift", id_shift))
+		_, err = Conn.Exec(`DELETE FROM replaces WHERE date = $1 AND idshift = $2`, date, id_shift)
+		if err != nil {
+			return false, handleError("ошибка при удалении к БД replaces", err)
+		}
+	}
+
+	logger.Debug("Добавление замен в таблицу replaces", zap.Any("data", data))
+	for _, item := range data {
+		_, err := Conn.Exec(`INSERT INTO replaces ("group", lesson, discipline_rasp, discipline_replace, classroom, date, idshift) VALUES ($1, $2, $3, $4, $5, $6, $7)`, item[1], item[2], item[3], item[4], item[5], date, id_shift)
+		if err != nil {
+			return false, handleError("ошибка при вставке в БД replaces", err)
+		}
+	}
+
+	return true, nil
 }
 
 func chunkArray(data []string, chunkSize int) [][]string {
