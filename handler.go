@@ -329,7 +329,7 @@ func getNextSchedule(group string) (string, error) {
 	nextDate := dateForm.AddDate(0, 0, 1)
 
 	idweek++
-	if idweek == 6 {
+	if idweek == 7 {
 		idweek = 1
 		if typeweek == "Числитель" {
 			typeweek = "Знаменатель"
@@ -382,6 +382,14 @@ func getPrevSchedule(group string) (string, error) {
 	}
 	dateForm, _ := time.Parse("2006-01-02T15:04:05Z", date)
 	prevDate := dateForm.AddDate(0, 0, -1)
+
+	idweek--
+	if idweek == 0 {
+		idweek = 6
+		if typeweek == "Числитель" {
+			typeweek = "Знаменатель"
+		}
+	}
 
 	// Получение замен
 	rows, err = Conn.Queryx(`SELECT * FROM replaces WHERE "group" = $1 AND date = $2`, group, prevDate.Format("2006-01-02T15:04:05Z"))
