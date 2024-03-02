@@ -19,17 +19,24 @@ const (
 	URL_SECOND = "https://menu.sttec.yar.ru/timetable/rasp_second.html"
 )
 
+var (
+	newData_first  [][]string
+	newData_second [][]string
+	oldData_first  [][]string
+	oldData_second [][]string
+)
+
 func Parser() error {
 	urls := []string{URL_FIRST, URL_SECOND}
 	checks := make([]bool, len(urls))
 
 	for i, url := range urls {
-		data, date, id_week, type_week, err := DataProcessing(url)
+		date, id_week, type_week, err := DataProcessing(url)
 		logger.Debug("Дата в цикле", zap.String("date", date))
 		if err != nil {
 			return handleError("ошибка при обработке данных замен", err)
 		}
-		checks[i], err = InsertData(data, date, id_week, type_week, i+1)
+		checks[i], err = InsertData(date, id_week, type_week, i+1)
 		if err != nil {
 			return handleError("ошибка при добавлении данных замен", err)
 		}
@@ -49,7 +56,7 @@ func Parser() error {
 	return nil
 }
 
-func DataProcessing(url string) ([][]string, string, int, string, error) {
+func DataProcessing(url string) (string, int, string, error) {
 	logger.Info("Парсинг HTML-расписания", zap.String("url", url))
 
 	c := colly.NewCollector()
@@ -170,12 +177,17 @@ func DataProcessing(url string) ([][]string, string, int, string, error) {
 			}
 		}
 	}
+	if url == URL_FIRST {
+		newData_first = newData
+	} else {
+		newData_second = newData
+	}
 
 	logger.Debug("Массив с расписанием", zap.Any("newData", newData))
-	return newData, date, id_week, type_week, nil
+	return date, id_week, type_week, nil
 }
 
-func InsertData(data [][]string, date string, id_week int, type_week string, id_shift int) (bool, error) {
+func InsertData(date string, id_week int, type_week string, id_shift int) (bool, error) {
 	logger.Info("Добавление данных в БД", zap.String("date", date), zap.Int("id_week", id_week), zap.String("type_week", type_week), zap.Int("id_shift", id_shift))
 
 	var column string
@@ -188,7 +200,17 @@ func InsertData(data [][]string, date string, id_week int, type_week string, id_
 		return false, handleError("неверный id_shift", nil)
 	}
 
-	hashData, _ := GetMD5Hash(data)
+	var data [][]string
+	if column == "result_first" {
+		data = newData_first
+	} else {
+		data = newData_second
+	}
+
+	hashData, err := GetMD5Hash(data)
+	if err != nil {
+		logger.Error("ошибка при получении хеша массива данных", zap.Error(err))
+	}
 	logger.Debug("Получение хеша массива данных", zap.String("hashData", hashData))
 
 	rows, err := Conn.Queryx(`SELECT result_first,result_second FROM arrays WHERE date = $1`, date)
@@ -214,7 +236,8 @@ func InsertData(data [][]string, date string, id_week int, type_week string, id_
 		query = fmt.Sprintf(`UPDATE arrays SET %s = $1, idweek = $2, typeweek = $3 WHERE date = $4`, column)
 	} else {
 		logger.Debug("Хеш совпадает, пропуск")
-		return false, nil
+		query = fmt.Sprintf(`INSERT INTO arrays (%s, idweek, typeweek, date) VALUES ($1, $2, $3, $4)`, column)
+		//return false, nil
 	}
 
 	logger.Debug("Запрос к БД", zap.String("query", query))
@@ -233,10 +256,30 @@ func InsertData(data [][]string, date string, id_week int, type_week string, id_
 
 	logger.Debug("Добавление замен в таблицу replaces", zap.Any("data", data))
 	for _, item := range data {
-		_, err := Conn.Exec(`INSERT INTO replaces ("group", lesson, discipline_rasp, discipline_replace, classroom, date, idshift) VALUES ($1, $2, $3, $4, $5, $6, $7)`, item[1], item[2], item[3], item[4], item[5], date, id_shift)
+		var lesson any
+		if item[2] == "07.40" {
+			lesson = 10
+		} else if item[2] == "08.00" {
+			lesson = 0
+		} else if item[2] == "08.25" {
+			lesson = 11
+		} else {
+			lesson = item[2]
+		}
+		logger.Info("Добавление замены", zap.Any("item", lesson))
+		//_, err := Conn.Exec(`INSERT INTO replaces ("group", lesson, discipline_rasp, discipline_replace, classroom, date, idshift) VALUES ($1, $2, $3, $4, $5, $6, $7)`, item[1], lesson, item[3], item[4], item[5], date, id_shift)
 		if err != nil {
 			return false, handleError("ошибка при вставке в БД replaces", err)
 		}
+	}
+
+	logger.Info("1")
+	if column == "result_first" {
+		oldData_first = data
+		logger.Info("Новый массив с расписанием1", zap.Any("data", oldData_first))
+	} else {
+		oldData_second = data
+		logger.Info("Новый массив с расписанием2", zap.Any("data", oldData_second))
 	}
 
 	return true, nil

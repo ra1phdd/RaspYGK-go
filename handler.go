@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"strconv"
 	"time"
-	"go.uber.org/zap"
+
 	"github.com/jmoiron/sqlx"
+	"go.uber.org/zap"
 )
 
 var WeekdayTimeMap = map[int64]string{
@@ -51,7 +52,7 @@ func getUserData(user_id int64) (int, string, string, int, error) {
 	return id, group.String, role.String, int(push.Int32), nil
 }
 
-func getUserPUSH(idshift int) ([]map[string]interface{}, error) {
+func getUserPUSH(idshift int) ([][]string, error) {
 	var rows *sqlx.Rows
 	var err error
 	if idshift != 0 {
@@ -80,11 +81,47 @@ func getUserPUSH(idshift int) ([]map[string]interface{}, error) {
 		data = append(data, r)
 	}
 
-	logger.Debug("Все пользователи, у которых включены PUSH-уведомления", zap.Any("data", data))
-	return data, nil
+	logger.Info("newData_first", zap.Any("data", newData_first))
+	logger.Info("oldData_first", zap.Any("data", oldData_first))
+
+	var dataGroup []string
+	for _, newGroup := range newData_first {
+		matchFound := false
+		for _, oldGroup := range oldData_first {
+			if newGroup[1] == oldGroup[1] {
+				if fmt.Sprintf("%v", newGroup) == fmt.Sprintf("%v", oldGroup) {
+					matchFound = true
+				}
+			}
+		}
+		fmt.Println(matchFound)
+		if !matchFound {
+			dataGroup = append(dataGroup, newGroup[1])
+		}
+		logger.Info("Группы", zap.Any("dataGroup", dataGroup))
+	}
+
+	var lastData [][]string
+	if dataGroup != nil {
+		for _, value := range data {
+			matchFound := false
+			for _, group := range dataGroup {
+				if group == value["group"] {
+					matchFound = true
+					break
+				}
+			}
+			if !matchFound {
+				lastData = append(lastData, []string{fmt.Sprint(value["userid"]), fmt.Sprint(value["group"])})
+			}
+		}
+	}
+
+	logger.Debug("Все пользователи, у которых включены PUSH-уведомления", zap.Any("data", lastData))
+	return lastData, nil
 }
 
-func AddUser(user_id int64) (error) {
+func AddUser(user_id int64) error {
 	logger.Info("Добавление пользователя", zap.Int64("user_id", user_id))
 	rows, err := Conn.Queryx(`INSERT INTO users (userid) VALUES ($1)`, user_id)
 	if err != nil {
@@ -95,7 +132,7 @@ func AddUser(user_id int64) (error) {
 	return nil
 }
 
-func UpdateRole(role string, user_id int64) (error) {
+func UpdateRole(role string, user_id int64) error {
 	logger.Info("Обновление роли пользователя", zap.String("role", role), zap.Int64("user_id", user_id))
 	rows, err := Conn.Queryx(`UPDATE users SET role = $1 WHERE userid = $2`, role, user_id)
 	if err != nil {
@@ -106,7 +143,7 @@ func UpdateRole(role string, user_id int64) (error) {
 	return nil
 }
 
-func UpdateGroup(group string, user_id int64) (error) {
+func UpdateGroup(group string, user_id int64) error {
 	logger.Info("Обновление группы пользователя", zap.String("group", group), zap.Int64("user_id", user_id))
 
 	rows, err := Conn.Queryx(`SELECT lesson FROM schedules WHERE "group" = $1 AND idweek = 1 AND typeweek = 'Числитель' LIMIT 1`, group)
@@ -142,7 +179,7 @@ func UpdateGroup(group string, user_id int64) (error) {
 	return nil
 }
 
-func UpdatePUSH(push int, user_id int64) (error) {
+func UpdatePUSH(push int, user_id int64) error {
 	logger.Info("Обновление PUSH-уведомлений пользователя", zap.Int("push", push), zap.Int64("user_id", user_id))
 	rows, err := Conn.Queryx(`UPDATE users SET push = $1 WHERE userid = $2`, push, user_id)
 	if err != nil {
@@ -155,7 +192,7 @@ func UpdatePUSH(push int, user_id int64) (error) {
 
 func GetLessonTime(lesson int64, classroom string, idweek int64) (string, error) {
 	logger.Info("Получение времени занятия", zap.Int64("lesson", lesson), zap.String("classroom", classroom), zap.Int64("idweek", idweek))
-	
+
 	code := []rune(classroom)[0]
 
 	var time string
@@ -176,14 +213,14 @@ func GetLessonTime(lesson int64, classroom string, idweek int64) (string, error)
 			}
 		}
 	}
-	
+
 	logger.Debug("Время занятия", zap.String("time", time))
 	return time, nil
 }
 
 func GetTextSchedule(type_id int64, group string, date string, typeweek string, idweek int64, schedules []map[string]interface{}, replaces []map[string]interface{}) (string, error) {
 	logger.Info("Получение текста расписания", zap.Int64("type_id", type_id), zap.String("group", group), zap.String("date", date), zap.String("typeweek", typeweek), zap.Int64("idweek", idweek))
-	
+
 	text := "Расписание " + group + " на " + date + " (" + typeweek + "):\n"
 
 	for _, schedule := range schedules {
@@ -326,7 +363,7 @@ func getNextSchedule(group string) (string, error) {
 	}
 
 	dateForm, _ := time.Parse("2006-01-02T15:04:05Z", date)
-	nextDate := dateForm.AddDate(0, 0, 1)
+	var nextDate time.Time
 
 	idweek++
 	if idweek == 7 {
@@ -334,6 +371,9 @@ func getNextSchedule(group string) (string, error) {
 		if typeweek == "Числитель" {
 			typeweek = "Знаменатель"
 		}
+		nextDate = dateForm.AddDate(0, 0, 2)
+	} else {
+		nextDate = dateForm.AddDate(0, 0, 1)
 	}
 
 	// Получение расписания
@@ -381,7 +421,7 @@ func getPrevSchedule(group string) (string, error) {
 		}
 	}
 	dateForm, _ := time.Parse("2006-01-02T15:04:05Z", date)
-	prevDate := dateForm.AddDate(0, 0, -1)
+	var prevDate time.Time
 
 	idweek--
 	if idweek == 0 {
@@ -389,6 +429,9 @@ func getPrevSchedule(group string) (string, error) {
 		if typeweek == "Числитель" {
 			typeweek = "Знаменатель"
 		}
+		prevDate = dateForm.AddDate(0, 0, -2)
+	} else {
+		prevDate = dateForm.AddDate(0, 0, -1)
 	}
 
 	// Получение замен

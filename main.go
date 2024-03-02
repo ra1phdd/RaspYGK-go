@@ -19,7 +19,7 @@ func main() {
 
 	// Логгирование
 	atomicLevel := zap.NewAtomicLevel()
-	atomicLevel.SetLevel(zap.WarnLevel)
+	atomicLevel.SetLevel(zap.DebugLevel)
 	config := zap.Config{
 		Level:       atomicLevel,
 		Development: false,
@@ -44,7 +44,7 @@ func main() {
 		logger.Fatal("ошибка в работе парсера: ", zap.Error(err))
 	}
 
-	ticker := time.NewTicker(15 * time.Minute)
+	ticker := time.NewTicker(1 * time.Minute)
 	defer ticker.Stop()
 
 	for range ticker.C {
@@ -52,6 +52,11 @@ func main() {
 		if err != nil {
 			logger.Fatal("ошибка в работе парсера: ", zap.Error(err))
 		}
+		data, err := getUserPUSH(1)
+		if err != nil {
+			logger.Fatal("ошибка в работе пуша: ", zap.Error(err))
+		}
+		logger.Info("Отправка PUSH-уведомлений", zap.Any("data", data))
 	}
 }
 

@@ -409,21 +409,20 @@ func SendToPush(idshift int) error {
 		logger.Error("ошибка при получении пользователей с включенными PUSH в функции SendToPush: ", zap.Error(err))
 	}
 
-	for _, item := range data {
-		userid := item["userid"].(int64)
-		group := fmt.Sprint(item["group"])
-		schedule, err := getSchedule(group)
+	for userid, group := range data {
+		schedule, err := getSchedule(fmt.Sprint(group))
 		if err != nil {
 			logger.Error("ошибка при получении расписания в функции createHandlerPUSH: ", zap.Error(err))
 		}
 
-		chel := &tele.User{ID: userid}
-		_, err = b.Send(chel, schedule)
+		logger.Info("userid", zap.Any("userid", userid), zap.Any("group", group), zap.Any("schedule", schedule))
+		//chel := &tele.User{ID: userid.(int64)}
+		//_, err = b.Send(chel, schedule)
 		if err != nil {
 			logger.Error("ошибка при отправке PUSH-уведомления пользователю: ", zap.Error(err))
 		}
-
 	}
+
 	return nil
 }
 
