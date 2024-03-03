@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -258,11 +259,13 @@ func InsertData(date string, id_week int, type_week string, id_shift int) (bool,
 	logger.Debug("Добавление замен в таблицу replaces", zap.Any("data", data))
 	for _, item := range data {
 		var lesson any
-		if item[2] == "07.40" {
+		logger.Info("Время", zap.Any("item", item[2]))
+		fmt.Println(reflect.TypeOf(item[2]))
+		if item[2] == "7.40" {
 			lesson = 10
-		} else if item[2] == "08.00" {
+		} else if item[2] == "8.00" {
 			lesson = 0
-		} else if item[2] == "08.25" {
+		} else if item[2] == "8.25" {
 			lesson = 11
 		} else {
 			lesson = item[2]
