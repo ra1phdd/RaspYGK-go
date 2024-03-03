@@ -36,9 +36,11 @@ func Parser() error {
 		if err != nil {
 			return handleError("ошибка при обработке данных замен", err)
 		}
-		checks[i], err = InsertData(date, id_week, type_week, i+1)
-		if err != nil {
-			return handleError("ошибка при добавлении данных замен", err)
+		if (i == 0 && newData_first != nil) || (i == 1 && newData_second != nil) {
+			checks[i], err = InsertData(date, id_week, type_week, i+1)
+			if err != nil {
+				return handleError("ошибка при добавлении данных замен", err)
+			}
 		}
 	}
 
@@ -236,8 +238,7 @@ func InsertData(date string, id_week int, type_week string, id_shift int) (bool,
 		query = fmt.Sprintf(`UPDATE arrays SET %s = $1, idweek = $2, typeweek = $3 WHERE date = $4`, column)
 	} else {
 		logger.Debug("Хеш совпадает, пропуск")
-		query = fmt.Sprintf(`INSERT INTO arrays (%s, idweek, typeweek, date) VALUES ($1, $2, $3, $4)`, column)
-		//return false, nil
+		return false, nil
 	}
 
 	logger.Debug("Запрос к БД", zap.String("query", query))
@@ -267,7 +268,7 @@ func InsertData(date string, id_week int, type_week string, id_shift int) (bool,
 			lesson = item[2]
 		}
 		logger.Info("Добавление замены", zap.Any("item", lesson))
-		//_, err := Conn.Exec(`INSERT INTO replaces ("group", lesson, discipline_rasp, discipline_replace, classroom, date, idshift) VALUES ($1, $2, $3, $4, $5, $6, $7)`, item[1], lesson, item[3], item[4], item[5], date, id_shift)
+		_, err := Conn.Exec(`INSERT INTO replaces ("group", lesson, discipline_rasp, discipline_replace, classroom, date, idshift) VALUES ($1, $2, $3, $4, $5, $6, $7)`, item[1], lesson, item[3], item[4], item[5], date, id_shift)
 		if err != nil {
 			return false, handleError("ошибка при вставке в БД replaces", err)
 		}
