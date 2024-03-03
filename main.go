@@ -37,12 +37,12 @@ func main() {
 
 	ConnectDB()
 
-	go TelegramBot()
-
 	err := Parser()
 	if err != nil {
 		logger.Fatal("ошибка в работе парсера: ", zap.Error(err))
 	}
+
+	go TelegramBot()
 
 	ticker := time.NewTicker(1 * time.Minute)
 	defer ticker.Stop()
