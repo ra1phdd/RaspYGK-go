@@ -48,6 +48,7 @@ var (
 	isHelpCommandSent       bool
 	isAnswerTextCommandSent bool
 	isAnswerCommandSent     bool
+	isAnswerAllCommandSent  bool
 )
 
 func TelegramBot() {
@@ -202,6 +203,12 @@ func HandlerBot() {
 		return nil
 	})
 
+	b.Handle("/messageall", func(c tele.Context) error {
+		c.Send("Введи текст для пидорасов")
+		isAnswerAllCommandSent = true
+		return nil
+	})
+
 	b.Handle(tele.OnText, func(c tele.Context) error {
 		var userID int64
 		var text string
@@ -236,6 +243,14 @@ func HandlerBot() {
 				}
 				return nil
 			})
+		}
+		if isAnswerAllCommandSent {
+			text = c.Text()
+			err := SendToAll(text)
+			if err != nil {
+				logger.Error("ошибка при обработке HTTP-запроса в обработчике PUSH: ", zap.Error(err))
+			}
+			isAnswerAllCommandSent = false
 		}
 		return nil
 	})
@@ -503,6 +518,44 @@ func SendToAdmin(text string, userID int64, group string, role string) error {
 	_, err := b.Send(chel, "Сообщение от пидораса с ID "+fmt.Sprint(userID)+" из группы "+group+": "+text)
 	if err != nil {
 		logger.Error("ошибка при отправке сообщения админу: ", zap.Error(err))
+	}
+
+	return nil
+}
+
+func SendToAll(text string) error {
+	data, err := getUserPUSH(0, true)
+	if err != nil {
+		logger.Error("ошибка при получении пользователей с включенными PUSH в функции SendToPush: ", zap.Error(err))
+	}
+
+	for _, item := range data {
+		logger.Info("userid", zap.Any("userid", item[0]), zap.Any("group", item[1]))
+		userid := item[0]
+		userID, err := strconv.ParseInt(userid, 10, 64)
+		if err != nil {
+			// Обработка ошибки преобразования
+			log.Printf("Ошибка преобразования userid: %v", err)
+			continue
+		}
+		chel := &tele.User{ID: userID}
+		go func() {
+			for {
+				time.Sleep(3 * time.Second)
+				if b != nil {
+					_, err := b.Send(chel, text)
+					if err != nil {
+						logger.Error("ошибка при отправке PUSH-уведомления пользователю: ", zap.Error(err))
+					}
+					break
+				} else {
+					logger.Error("объект Bot не инициализирован")
+				}
+			}
+		}()
+		if err != nil {
+			logger.Error("ошибка при отправке PUSH-уведомления пользователю: ", zap.Error(err))
+		}
 	}
 
 	return nil
