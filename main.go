@@ -10,13 +10,6 @@ import (
 var logger *zap.Logger
 
 func main() {
-	// Перехватываем панику, чтобы бот не ложился от любой ошибки
-	defer func() {
-		if r := recover(); r != nil {
-			logger.Fatal("паника в работе программы: ", zap.Any("r", r))
-		}
-	}()
-
 	// Логгирование
 	atomicLevel := zap.NewAtomicLevel()
 	atomicLevel.SetLevel(zap.DebugLevel)
@@ -52,7 +45,7 @@ func main() {
 		if err != nil {
 			logger.Fatal("ошибка в работе парсера: ", zap.Error(err))
 		}
-		data, err := getUserPUSH(1)
+		data, err := getUserPUSH(1, false)
 		if err != nil {
 			logger.Fatal("ошибка в работе пуша: ", zap.Error(err))
 		}

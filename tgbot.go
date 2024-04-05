@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -39,10 +41,13 @@ var (
 		"IS1_35", "IS1_41", "IS1_43", "IS1_45",
 		"SA1_11", "SA1_21", "SA1_31", "SA1_41",
 		"IB1_11", "IB1_21", "IB1_41", "IB1_21"}
-	groupOARButtons = []string{}
-	groupSOButtons  = []string{}
-	groupMMOButtons = []string{}
-	groupOEPButtons = []string{}
+	groupOARButtons         = []string{}
+	groupSOButtons          = []string{}
+	groupMMOButtons         = []string{}
+	groupOEPButtons         = []string{}
+	isHelpCommandSent       bool
+	isAnswerTextCommandSent bool
+	isAnswerCommandSent     bool
 )
 
 func TelegramBot() {
@@ -75,11 +80,6 @@ func HandlerBot() {
 
 			return next(c)
 		})
-	})
-
-	b.Handle("/testPUSH", func(c tele.Context) error {
-		SendToPush(0)
-		return nil
 	})
 
 	b.Handle("/start", func(c tele.Context) error {
@@ -185,6 +185,58 @@ func HandlerBot() {
 				return nil
 			})
 		}()
+		return nil
+	})
+
+	b.Handle("Техподдержка", func(c tele.Context) error {
+		go func() {
+			c.Send("Введите текст сообщения: ")
+			isHelpCommandSent = true
+		}()
+		return nil
+	})
+
+	b.Handle("/message", func(c tele.Context) error {
+		c.Send("Введи userID пидораса")
+		isAnswerTextCommandSent = true
+		return nil
+	})
+
+	b.Handle(tele.OnText, func(c tele.Context) error {
+		var userID int64
+		var text string
+		var err error
+		if isHelpCommandSent {
+			err := SendToAdmin(c.Text(), userState.userID, userState.group, userState.role)
+			if err != nil {
+				logger.Error("ошибка при обработке HTTP-запроса в обработчике PUSH: ", zap.Error(err))
+			}
+			c.Send("Ваше обращение будет обязательно рассмотрено (если оно дойдет)!")
+			isHelpCommandSent = false
+		}
+		if isAnswerTextCommandSent {
+			userid := c.Text()
+			userID, err = strconv.ParseInt(userid, 10, 64)
+			if err != nil {
+				// Обработка ошибки преобразования
+				log.Printf("Ошибка преобразования userid: %v", err)
+			}
+			c.Send("Введи текст для пидораса")
+			isAnswerTextCommandSent = false
+			isAnswerCommandSent = true
+			b.Handle(tele.OnText, func(c tele.Context) error {
+				if isAnswerCommandSent {
+					text = c.Text()
+					chel := &tele.User{ID: userID}
+					_, err := b.Send(chel, "Сообщение от администратора: "+text)
+					if err != nil {
+						logger.Error("ошибка при отправке сообщения админу: ", zap.Error(err))
+					}
+					isAnswerCommandSent = false
+				}
+				return nil
+			})
+		}
 		return nil
 	})
 
@@ -404,20 +456,40 @@ func createHandlerPUSH() func(c tele.Context) error {
 }
 
 func SendToPush(idshift int) error {
-	data, err := getUserPUSH(idshift)
+	data, err := getUserPUSH(idshift, false)
 	if err != nil {
 		logger.Error("ошибка при получении пользователей с включенными PUSH в функции SendToPush: ", zap.Error(err))
 	}
 
-	for userid, group := range data {
-		schedule, err := getSchedule(fmt.Sprint(group))
+	for _, item := range data {
+		schedule, err := getSchedule(fmt.Sprint(item[1]))
 		if err != nil {
 			logger.Error("ошибка при получении расписания в функции createHandlerPUSH: ", zap.Error(err))
 		}
 
-		logger.Info("userid", zap.Any("userid", userid), zap.Any("group", group), zap.Any("schedule", schedule))
-		//chel := &tele.User{ID: userid.(int64)}
-		//_, err = b.Send(chel, schedule)
+		logger.Info("userid", zap.Any("userid", item[0]), zap.Any("group", item[1]), zap.Any("schedule", schedule))
+		userid := item[0]
+		userID, err := strconv.ParseInt(userid, 10, 64)
+		if err != nil {
+			// Обработка ошибки преобразования
+			log.Printf("Ошибка преобразования userid: %v", err)
+			continue
+		}
+		chel := &tele.User{ID: userID}
+		go func() {
+			for {
+				time.Sleep(3 * time.Second)
+				if b != nil {
+					_, err := b.Send(chel, schedule)
+					if err != nil {
+						logger.Error("ошибка при отправке PUSH-уведомления пользователю: ", zap.Error(err))
+					}
+					break
+				} else {
+					logger.Error("объект Bot не инициализирован")
+				}
+			}
+		}()
 		if err != nil {
 			logger.Error("ошибка при отправке PUSH-уведомления пользователю: ", zap.Error(err))
 		}
@@ -426,9 +498,9 @@ func SendToPush(idshift int) error {
 	return nil
 }
 
-func SendToAdmin(text string) error {
+func SendToAdmin(text string, userID int64, group string, role string) error {
 	chel := &tele.User{ID: 1230045591}
-	_, err := b.Send(chel, text)
+	_, err := b.Send(chel, "Сообщение от пидораса с ID "+fmt.Sprint(userID)+" из группы "+group+": "+text)
 	if err != nil {
 		logger.Error("ошибка при отправке сообщения админу: ", zap.Error(err))
 	}

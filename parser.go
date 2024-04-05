@@ -25,11 +25,13 @@ var (
 	newData_second [][]string
 	oldData_first  [][]string
 	oldData_second [][]string
+	debugMode      bool
 )
 
 func Parser() error {
 	urls := []string{URL_FIRST, URL_SECOND}
 	checks := make([]bool, len(urls))
+	debugMode = true
 
 	for i, url := range urls {
 		date, id_week, type_week, err := DataProcessing(url)
@@ -149,7 +151,7 @@ func DataProcessing(url string) (string, int, string, error) {
 
 	for _, item := range result {
 		if item[2] != "" {
-			item[3] = strings.Replace(item[3], "...", "", -1)
+			item[3] = strings.Replace(item[3], "...", "по расписанию", -1)
 
 			values2 := strings.Split(item[2], ",")
 			values3 := strings.Split(item[3], ",")
@@ -170,8 +172,11 @@ func DataProcessing(url string) (string, int, string, error) {
 						end, _ := strconv.Atoi(rangeValues[1])
 
 						for j := start; j <= end; j++ {
-							newItem[2] = strconv.Itoa(j)
-							newData = append(newData, newItem)
+							newItemCopy := make([]string, len(newItem))
+							copy(newItemCopy, newItem)
+							newItemCopy[2] = strconv.Itoa(j)
+							fmt.Println(newItemCopy)
+							newData = append(newData, newItemCopy)
 						}
 					}
 				} else {
@@ -234,7 +239,7 @@ func InsertData(date string, id_week int, type_week string, id_shift int) (bool,
 	if !result_first.Valid && !result_second.Valid {
 		logger.Debug("Добавление хеша в таблицу arrays", zap.String("column", column))
 		query = fmt.Sprintf(`INSERT INTO arrays (%s, idweek, typeweek, date) VALUES ($1, $2, $3, $4)`, column)
-	} else if (column == "result_first" && result_first.String != hashData) || (column == "result_second" && result_second.String != hashData) {
+	} else if (column == "result_first" && result_first.String != hashData) || (column == "result_second" && result_second.String != hashData) || debugMode {
 		logger.Debug("Обновление существующего хеша в таблице arrays", zap.String("column", column))
 		query = fmt.Sprintf(`UPDATE arrays SET %s = $1, idweek = $2, typeweek = $3 WHERE date = $4`, column)
 	} else {
@@ -248,7 +253,7 @@ func InsertData(date string, id_week int, type_week string, id_shift int) (bool,
 		return false, handleError("ошибка при обновлении к БД arrays", err)
 	}
 
-	if result_first.Valid || result_second.Valid {
+	if result_first.Valid || result_second.Valid || debugMode {
 		logger.Debug("Удаление всех замен из таблицы replaces", zap.String("date", date), zap.Int("id_shift", id_shift))
 		_, err = Conn.Exec(`DELETE FROM replaces WHERE date = $1 AND idshift = $2`, date, id_shift)
 		if err != nil {

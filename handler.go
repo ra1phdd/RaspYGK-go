@@ -52,7 +52,7 @@ func getUserData(user_id int64) (int, string, string, int, error) {
 	return id, group.String, role.String, int(push.Int32), nil
 }
 
-func getUserPUSH(idshift int) ([][]string, error) {
+func getUserPUSH(idshift int, debugMode bool) ([][]string, error) {
 	var rows *sqlx.Rows
 	var err error
 	if idshift != 0 {
@@ -94,12 +94,12 @@ func getUserPUSH(idshift int) ([][]string, error) {
 				}
 			}
 		}
-		fmt.Println(matchFound)
-		if !matchFound {
+		if !matchFound || debugMode {
+			fmt.Println("есть")
 			dataGroup = append(dataGroup, newGroup[1])
 		}
-		logger.Info("Группы", zap.Any("dataGroup", dataGroup))
 	}
+	logger.Info("Группы", zap.Any("dataGroup", dataGroup))
 
 	var lastData [][]string
 	if dataGroup != nil {
@@ -108,10 +108,9 @@ func getUserPUSH(idshift int) ([][]string, error) {
 			for _, group := range dataGroup {
 				if group == value["group"] {
 					matchFound = true
-					break
 				}
 			}
-			if !matchFound {
+			if !matchFound || debugMode {
 				lastData = append(lastData, []string{fmt.Sprint(value["userid"]), fmt.Sprint(value["group"])})
 			}
 		}
@@ -221,7 +220,25 @@ func GetLessonTime(lesson int64, classroom string, idweek int64) (string, error)
 func GetTextSchedule(type_id int64, group string, date string, typeweek string, idweek int64, schedules []map[string]interface{}, replaces []map[string]interface{}) (string, error) {
 	logger.Info("Получение текста расписания", zap.Int64("type_id", type_id), zap.String("group", group), zap.String("date", date), zap.String("typeweek", typeweek), zap.Int64("idweek", idweek))
 
-	text := "Расписание " + group + " на " + date + " (" + typeweek + "):\n"
+	var week string
+	switch idweek {
+	case 1:
+		week = "понедельник"
+	case 2:
+		week = "вторник"
+	case 3:
+		week = "среду"
+	case 4:
+		week = "четверг"
+	case 5:
+		week = "пятницу"
+	case 6:
+		week = "субботу"
+	default:
+		return "", handleError("Неизвестная неделя", nil)
+	}
+
+	text := "Расписание " + group + " на " + week + ", " + date + " (" + typeweek + "):\n"
 
 	for _, schedule := range schedules {
 		lesson := schedule["lesson"].(int64)
@@ -230,10 +247,21 @@ func GetTextSchedule(type_id int64, group string, date string, typeweek string, 
 		classroom_sched := fmt.Sprint(schedule["classroom"])
 
 		if replaces != nil {
+			replaceDone := 0
 			for _, replace := range replaces {
+				fmt.Println(replace)
 				lesson_replace := replace["lesson"].(int64)
 				discipline_replace := fmt.Sprint(replace["discipline_replace"])
+				fmt.Println(discipline_replace)
+				if discipline_replace == "по расписанию " || discipline_replace == "..." {
+					discipline_replace = discipline
+				}
 				classroom_replace := fmt.Sprint(replace["classroom"])
+
+				if group == "ИС1-21" {
+					fmt.Println(lesson, lesson_replace)
+					fmt.Println(discipline)
+				}
 
 				if lesson == lesson_replace {
 					time, err := GetLessonTime(lesson_replace, classroom_replace, idweek)
@@ -242,17 +270,17 @@ func GetTextSchedule(type_id int64, group string, date string, typeweek string, 
 					}
 
 					text += strconv.FormatInt(lesson_replace, 10) + " пара [" + classroom_replace + "] (" + time + ") " + discipline_replace + " (❗замена)\n"
-					break
-				} else {
-					if discipline != "<nil>" {
-						time, err := GetLessonTime(lesson, classroom_sched, idweek)
-						if err != nil {
-							return "", handleError("ошибка при вызове функции GetLessonTime, когда замены нет: %w", err)
-						}
-
-						text += strconv.FormatInt(lesson, 10) + " пара [" + classroom_sched + "] (" + time + ") " + discipline + " (" + teacher + ")\n"
+					replaceDone = 1
+				}
+			}
+			if replaceDone == 0 {
+				if discipline != "<nil>" {
+					time, err := GetLessonTime(lesson, classroom_sched, idweek)
+					if err != nil {
+						return "", handleError("ошибка при вызове функции GetLessonTime, когда замены нет: %w", err)
 					}
-					break
+
+					text += strconv.FormatInt(lesson, 10) + " пара [" + classroom_sched + "] (" + time + ") " + discipline + " (" + teacher + ")\n"
 				}
 			}
 		} else {
