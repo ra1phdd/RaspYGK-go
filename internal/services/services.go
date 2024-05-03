@@ -1,12 +1,13 @@
-package main
+package services
 
 import (
 	"database/sql"
 	"fmt"
+	"raspygk/pkg/db"
+	"raspygk/pkg/logger"
 	"strconv"
 	"time"
 
-	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
 )
 
@@ -29,11 +30,12 @@ var WeekendTimeMap = map[int64]string{
 	5: "16:45",
 }
 
-func getUserData(user_id int64) (int, string, string, int, error) {
+func GetUserData(user_id int64) (int, string, string, int, error) {
 	logger.Info("Получение данных пользователя", zap.Int64("user_id", user_id))
-	rows, err := Conn.Queryx(`SELECT id,"group",role,push FROM users WHERE userid = $1`, user_id)
+	rows, err := db.Conn.Queryx(`SELECT id,"group",role,push FROM users WHERE userid = $1`, user_id)
 	if err != nil {
-		return 0, "", "", 0, handleError("ошибка при выборке данных из таблицы users в функции getUserData: %w", err)
+		logger.Error("ошибка при выборке данных из таблицы users в функции getUserData", zap.Error(err))
+		return 0, "", "", 0, err
 	}
 	defer rows.Close()
 
@@ -44,7 +46,8 @@ func getUserData(user_id int64) (int, string, string, int, error) {
 	for rows.Next() {
 		err := rows.Scan(&id, &group, &role, &push)
 		if err != nil {
-			return 0, "", "", 0, handleError("ошибка при обработке данных из таблицы users в функции getUserData: %w", err)
+			logger.Error("ошибка при обработке данных из таблицы users в функции getUserData", zap.Error(err))
+			return 0, "", "", 0, err
 		}
 	}
 
@@ -52,20 +55,27 @@ func getUserData(user_id int64) (int, string, string, int, error) {
 	return id, group.String, role.String, int(push.Int32), nil
 }
 
-func getUserPUSH(idshift int, debugMode bool) ([][]string, error) {
+// Переписать нахуй, фулл хуйня
+func GetUserPUSH(idshift int, debugMode bool) ([][]string, error) {
+	return nil, nil
+}
+
+/*func GetUserPUSH(idshift int, debugMode bool) ([][]string, error) {
 	var rows *sqlx.Rows
 	var err error
 	if idshift != 0 {
 		logger.Info("Получение данных о пользователях, у который включены PUSH-уведомления", zap.Int("idshift", idshift))
-		rows, err = Conn.Queryx(`SELECT userid,"group" FROM users WHERE push = 1 AND idshift = $1`, idshift)
+		rows, err = db.Conn.Queryx(`SELECT userid,"group" FROM users WHERE push = 1 AND idshift = $1`, idshift)
 		if err != nil {
-			return nil, handleError("ошибка при выборке данных из таблицы users в функции getUserPUSH: %w", err)
+			logger.Error("ошибка при выборке данных из таблицы users в функции getUserPUSH", zap.Error(err))
+			return nil, err
 		}
 	} else {
 		logger.Info("Получение данных о пользователях, у который включены PUSH-уведомления")
-		rows, err = Conn.Queryx(`SELECT userid,"group" FROM users WHERE push = 1`)
+		rows, err = db.Conn.Queryx(`SELECT userid,"group" FROM users WHERE push = 1`)
 		if err != nil {
-			return nil, handleError("ошибка при выборке данных из таблицы users в функции getUserPUSH: %w", err)
+			logger.Error("ошибка при выборке данных из таблицы users в функции getUserPUSH", zap.Error(err))
+			return nil, err
 		}
 	}
 	defer rows.Close()
@@ -75,19 +85,17 @@ func getUserPUSH(idshift int, debugMode bool) ([][]string, error) {
 		r := make(map[string]interface{})
 		err := rows.MapScan(r)
 		if err != nil {
-			return nil, handleError("ошибка при обработке данных из таблицы users в функции getUserPUSH: %w", err)
+			logger.Error("ошибка при обработке данных из таблицы users в функции getUserPUSH", zap.Error(err))
+			return nil, err
 		}
 
 		data = append(data, r)
 	}
 
-	logger.Info("newData_first", zap.Any("data", newData_first))
-	logger.Info("oldData_first", zap.Any("data", oldData_first))
-
 	var dataGroup []string
-	for _, newGroup := range newData_first {
+	for _, newGroup := range parser.NewData_first {
 		matchFound := false
-		for _, oldGroup := range oldData_first {
+		for _, oldGroup := range parser.OldData_first {
 			if newGroup[1] == oldGroup[1] {
 				if fmt.Sprintf("%v", newGroup) == fmt.Sprintf("%v", oldGroup) {
 					matchFound = true
@@ -118,13 +126,14 @@ func getUserPUSH(idshift int, debugMode bool) ([][]string, error) {
 
 	logger.Debug("Все пользователи, у которых включены PUSH-уведомления", zap.Any("data", lastData))
 	return lastData, nil
-}
+}*/
 
 func AddUser(user_id int64) error {
 	logger.Info("Добавление пользователя", zap.Int64("user_id", user_id))
-	rows, err := Conn.Queryx(`INSERT INTO users (userid) VALUES ($1)`, user_id)
+	rows, err := db.Conn.Queryx(`INSERT INTO users (userid) VALUES ($1)`, user_id)
 	if err != nil {
-		return handleError("ошибка при добавлении пользователя в таблицу users: %w", err)
+		logger.Error("ошибка при добавлении пользователя в таблицу users", zap.Error(err))
+		return err
 	}
 	defer rows.Close()
 
@@ -133,9 +142,10 @@ func AddUser(user_id int64) error {
 
 func UpdateRole(role string, user_id int64) error {
 	logger.Info("Обновление роли пользователя", zap.String("role", role), zap.Int64("user_id", user_id))
-	rows, err := Conn.Queryx(`UPDATE users SET role = $1 WHERE userid = $2`, role, user_id)
+	rows, err := db.Conn.Queryx(`UPDATE users SET role = $1 WHERE userid = $2`, role, user_id)
 	if err != nil {
-		return handleError("ошибка при обновлении роли в таблице users: %w", err)
+		logger.Error("ошибка при обновлении роли в таблице users", zap.Error(err))
+		return err
 	}
 	defer rows.Close()
 
@@ -145,9 +155,10 @@ func UpdateRole(role string, user_id int64) error {
 func UpdateGroup(group string, user_id int64) error {
 	logger.Info("Обновление группы пользователя", zap.String("group", group), zap.Int64("user_id", user_id))
 
-	rows, err := Conn.Queryx(`SELECT lesson FROM schedules WHERE "group" = $1 AND idweek = 1 AND typeweek = 'Числитель' LIMIT 1`, group)
+	rows, err := db.Conn.Queryx(`SELECT lesson FROM schedules WHERE "group" = $1 AND idweek = 1 AND typeweek = 'Числитель' LIMIT 1`, group)
 	if err != nil {
-		return handleError("ошибка при выборке данных из таблицы schedules в функции UpdateGroup: %w", err)
+		logger.Error("ошибка при выборке данных из таблицы schedules в функции UpdateGroup", zap.Error(err))
+		return err
 	}
 	defer rows.Close()
 
@@ -155,22 +166,25 @@ func UpdateGroup(group string, user_id int64) error {
 	for rows.Next() {
 		err := rows.Scan(&lesson)
 		if err != nil {
-			return handleError("ошибка при обработке данных из таблицы schedules в функции UpdateGroup: %w", err)
+			logger.Error("ошибка при обработке данных из таблицы schedules в функции UpdateGroup", zap.Error(err))
+			return err
 		}
 	}
 
 	if lesson == 3 || lesson == 4 || lesson == 5 {
 		logger.Debug("Вторая смена", zap.String("group", group))
-		rows, err = Conn.Queryx(`UPDATE users SET "group" = $1, idshift = 2 WHERE userid = $2`, group, user_id)
+		rows, err = db.Conn.Queryx(`UPDATE users SET "group" = $1, idshift = 2 WHERE userid = $2`, group, user_id)
 		if err != nil {
-			return handleError("ошибка при обновлении данных в таблице users в функции UpdateGroup: %w", err)
+			logger.Error("ошибка при обновлении данных в таблице users в функции UpdateGroup", zap.Error(err))
+			return err
 		}
 		defer rows.Close()
 	} else {
 		logger.Debug("Первая смена", zap.String("group", group))
-		rows, err = Conn.Queryx(`UPDATE users SET "group" = $1, idshift = 1 WHERE userid = $2`, group, user_id)
+		rows, err = db.Conn.Queryx(`UPDATE users SET "group" = $1, idshift = 1 WHERE userid = $2`, group, user_id)
 		if err != nil {
-			return handleError("ошибка при обновлении данных в таблице users в функции UpdateGroup: %w", err)
+			logger.Error("ошибка при обновлении данных в таблице users в функции UpdateGroup", zap.Error(err))
+			return err
 		}
 		defer rows.Close()
 	}
@@ -180,9 +194,10 @@ func UpdateGroup(group string, user_id int64) error {
 
 func UpdatePUSH(push int, user_id int64) error {
 	logger.Info("Обновление PUSH-уведомлений пользователя", zap.Int("push", push), zap.Int64("user_id", user_id))
-	rows, err := Conn.Queryx(`UPDATE users SET push = $1 WHERE userid = $2`, push, user_id)
+	rows, err := db.Conn.Queryx(`UPDATE users SET push = $1 WHERE userid = $2`, push, user_id)
 	if err != nil {
-		return handleError("ошибка при обновлении данных в таблице users в функции UpdatePUSH: %w", err)
+		logger.Error("ошибка при обновлении данных в таблице users в функции UpdatePUSH", zap.Error(err))
+		return err
 	}
 	defer rows.Close()
 
@@ -192,6 +207,9 @@ func UpdatePUSH(push int, user_id int64) error {
 func GetLessonTime(lesson int64, classroom string, idweek int64) (string, error) {
 	logger.Info("Получение времени занятия", zap.Int64("lesson", lesson), zap.String("classroom", classroom), zap.Int64("idweek", idweek))
 
+	if classroom == "" {
+		return "-", nil
+	}
 	code := []rune(classroom)[0]
 
 	var time string
@@ -201,14 +219,16 @@ func GetLessonTime(lesson int64, classroom string, idweek int64) (string, error)
 		if code == 'А' || code == 'Б' || code == 'В' || code == 'М' || classroom == "ДОТ" {
 			time, ok = WeekdayTimeMap[lesson]
 			if !ok {
-				return "", handleError("Время пары не найдено", nil)
+				logger.Error("Время пары не найдено")
+				return "", nil
 			}
 		}
 	} else if idweek == 6 {
 		if code == 'А' || code == 'Б' || code == 'В' || code == 'М' || classroom == "ДОТ" {
 			time, ok = WeekendTimeMap[lesson]
 			if !ok {
-				return "", handleError("Время пары не найдено", nil)
+				logger.Error("Время пары не найдено")
+				return "", nil
 			}
 		}
 	}
@@ -235,7 +255,8 @@ func GetTextSchedule(type_id int64, group string, date string, typeweek string, 
 	case 6:
 		week = "субботу"
 	default:
-		return "", handleError("Неизвестная неделя", nil)
+		logger.Error("Неизвестная неделя")
+		return "", nil
 	}
 
 	text := "Расписание " + group + " на " + week + ", " + date + " (" + typeweek + "):\n"
@@ -258,15 +279,11 @@ func GetTextSchedule(type_id int64, group string, date string, typeweek string, 
 				}
 				classroom_replace := fmt.Sprint(replace["classroom"])
 
-				if group == "ИС1-21" {
-					fmt.Println(lesson, lesson_replace)
-					fmt.Println(discipline)
-				}
-
 				if lesson == lesson_replace {
 					time, err := GetLessonTime(lesson_replace, classroom_replace, idweek)
 					if err != nil {
-						return "", handleError("ошибка при вызове функции GetLessonTime, когда замена есть: %w", err)
+						logger.Error("ошибка при вызове функции GetLessonTime, когда замена есть", zap.Error(err))
+						return "", nil
 					}
 
 					text += strconv.FormatInt(lesson_replace, 10) + " пара [" + classroom_replace + "] (" + time + ") " + discipline_replace + " (❗замена)\n"
@@ -277,7 +294,8 @@ func GetTextSchedule(type_id int64, group string, date string, typeweek string, 
 				if discipline != "<nil>" {
 					time, err := GetLessonTime(lesson, classroom_sched, idweek)
 					if err != nil {
-						return "", handleError("ошибка при вызове функции GetLessonTime, когда замены нет: %w", err)
+						logger.Error("ошибка при вызове функции GetLessonTime, когда замены нет", zap.Error(err))
+						return "", nil
 					}
 
 					text += strconv.FormatInt(lesson, 10) + " пара [" + classroom_sched + "] (" + time + ") " + discipline + " (" + teacher + ")\n"
@@ -288,7 +306,8 @@ func GetTextSchedule(type_id int64, group string, date string, typeweek string, 
 				time, err := GetLessonTime(lesson, classroom_sched, idweek)
 
 				if err != nil {
-					return "", handleError("ошибка при вызове GetLessonTime, когда замены не обновлены: %w", err)
+					logger.Error("ошибка при вызове GetLessonTime, когда замены не обновлены", zap.Error(err))
+					return "", nil
 				}
 
 				text += strconv.FormatInt(lesson, 10) + " пара [" + classroom_sched + "] (" + time + ") " + discipline + " (" + teacher + ")\n"
@@ -306,12 +325,13 @@ func GetTextSchedule(type_id int64, group string, date string, typeweek string, 
 	return text, nil
 }
 
-func getSchedule(group string) (string, error) {
+func GetSchedule(group string) (string, error) {
 	logger.Info("Получение расписания", zap.String("group", group))
 	// Получение даты, номера и типа недели
-	rows, err := Conn.Queryx(`SELECT idweek,typeweek,date FROM arrays ORDER BY id DESC LIMIT 1`)
+	rows, err := db.Conn.Queryx(`SELECT idweek,typeweek,date FROM arrays ORDER BY id DESC LIMIT 1`)
 	if err != nil {
-		return "", handleError("ошибка при выборке данных из таблицы arrays в функции getSchedule: %w", err)
+		logger.Error("ошибка при выборке данных из таблицы arrays в функции getSchedule", zap.Error(err))
+		return "", err
 	}
 	defer rows.Close()
 
@@ -321,15 +341,17 @@ func getSchedule(group string) (string, error) {
 	for rows.Next() {
 		err := rows.Scan(&idweek, &typeweek, &date)
 		if err != nil {
-			return "", handleError("ошибка при обработке данных из таблицы arrays в функции getSchedule: %w", err)
+			logger.Error("ошибка при обработке данных из таблицы arrays в функции getSchedule", zap.Error(err))
+			return "", err
 		}
 	}
 	dateForm, _ := time.Parse("2006-01-02T15:04:05Z", date)
 
 	// Получение замен
-	rows, err = Conn.Queryx(`SELECT * FROM replaces WHERE "group" = $1 AND date = $2`, group, date)
+	rows, err = db.Conn.Queryx(`SELECT * FROM replaces WHERE "group" = $1 AND date = $2`, group, date)
 	if err != nil {
-		return "", handleError("ошибка при выборке данных из таблицы replaces в функции getSchedule: %w", err)
+		logger.Error("ошибка при выборке данных из таблицы replaces в функции getSchedule", zap.Error(err))
+		return "", err
 	}
 	defer rows.Close()
 
@@ -338,16 +360,18 @@ func getSchedule(group string) (string, error) {
 		r := make(map[string]interface{})
 		err := rows.MapScan(r)
 		if err != nil {
-			return "", handleError("ошибка при обработке данных из таблицы replaces в функции getSchedule: %w", err)
+			logger.Error("ошибка при обработке данных из таблицы replaces в функции getSchedule", zap.Error(err))
+			return "", err
 		}
 
 		replaces = append(replaces, r)
 	}
 
 	// Получение расписания
-	rows, err = Conn.Queryx(`SELECT * FROM schedules WHERE "group" = $1 AND idweek = $2 AND typeweek = $3`, group, idweek, typeweek)
+	rows, err = db.Conn.Queryx(`SELECT * FROM schedules WHERE "group" = $1 AND idweek = $2 AND typeweek = $3`, group, idweek, typeweek)
 	if err != nil {
-		return "", handleError("ошибка при выборке данных из таблицы schedules в функции getSchedule: %w", err)
+		logger.Error("ошибка при выборке данных из таблицы schedules в функции getSchedule", zap.Error(err))
+		return "", err
 	}
 	defer rows.Close()
 
@@ -356,7 +380,8 @@ func getSchedule(group string) (string, error) {
 		r := make(map[string]interface{})
 		err := rows.MapScan(r)
 		if err != nil {
-			return "", handleError("ошибка при обработке данных из таблицы schedules в функции getSchedule: %w", err)
+			logger.Error("ошибка при обработке данных из таблицы schedules в функции getSchedule", zap.Error(err))
+			return "", err
 		}
 
 		schedules = append(schedules, r)
@@ -364,18 +389,20 @@ func getSchedule(group string) (string, error) {
 
 	text, err := GetTextSchedule(0, group, dateForm.Format("02.01.2006"), typeweek, idweek, schedules, replaces)
 	if err != nil {
-		return "", handleError("ошибка при вызове функции GetTextSchedule: %w", err)
+		logger.Error("ошибка при вызове функции GetTextSchedule", zap.Error(err))
+		return "", err
 	}
 
 	return text, nil
 }
 
-func getNextSchedule(group string) (string, error) {
+func GetNextSchedule(group string) (string, error) {
 	logger.Info("Получение расписания на следующий день", zap.String("group", group))
 	// Получение даты, номера и типа недели
-	rows, err := Conn.Queryx(`SELECT idweek,typeweek,date FROM arrays ORDER BY id DESC LIMIT 1`)
+	rows, err := db.Conn.Queryx(`SELECT idweek,typeweek,date FROM arrays ORDER BY id DESC LIMIT 1`)
 	if err != nil {
-		return "", handleError("ошибка при выборке данных из таблицы arrays в функции getNextSchedule: %w", err)
+		logger.Error("ошибка при выборке данных из таблицы arrays в функции getNextSchedule", zap.Error(err))
+		return "", err
 	}
 	defer rows.Close()
 
@@ -386,7 +413,8 @@ func getNextSchedule(group string) (string, error) {
 	for rows.Next() {
 		err := rows.Scan(&idweek, &typeweek, &date)
 		if err != nil {
-			return "", handleError("ошибка при обработке данных из таблицы arrays в функции getNextSchedule: %w", err)
+			logger.Error("ошибка при обработке данных из таблицы arrays в функции getNextSchedule", zap.Error(err))
+			return "", err
 		}
 	}
 
@@ -405,9 +433,10 @@ func getNextSchedule(group string) (string, error) {
 	}
 
 	// Получение расписания
-	rows, err = Conn.Queryx(`SELECT * FROM schedules WHERE "group" = $1 AND idweek = $2 AND typeweek = $3`, group, idweek, typeweek)
+	rows, err = db.Conn.Queryx(`SELECT * FROM schedules WHERE "group" = $1 AND idweek = $2 AND typeweek = $3`, group, idweek, typeweek)
 	if err != nil {
-		return "", handleError("ошибка при выборке данных из таблицы schedules в функции getNextSchedule: %w", err)
+		logger.Error("ошибка при выборке данных из таблицы arrays в функции getNextSchedule", zap.Error(err))
+		return "", err
 	}
 	defer rows.Close()
 
@@ -416,7 +445,8 @@ func getNextSchedule(group string) (string, error) {
 		r := make(map[string]interface{})
 		err := rows.MapScan(r)
 		if err != nil {
-			return "", handleError("ошибка при обработке данных из таблицы schedules в функции getNextSchedule: %w", err)
+			logger.Error("ошибка при обработке данных из таблицы schedules в функции getNextSchedule", zap.Error(err))
+			return "", err
 		}
 
 		schedules = append(schedules, r)
@@ -424,18 +454,20 @@ func getNextSchedule(group string) (string, error) {
 
 	text, err := GetTextSchedule(1, group, nextDate.Format("02.01.2006"), typeweek, idweek, schedules, nil)
 	if err != nil {
-		return "", handleError("ошибка при вызове функции GetTextSchedule: %w", err)
+		logger.Error("ошибка при вызове функции GetTextSchedule", zap.Error(err))
+		return "", err
 	}
 
 	return text, nil
 }
 
-func getPrevSchedule(group string) (string, error) {
+func GetPrevSchedule(group string) (string, error) {
 	logger.Info("Получение расписания на предыдущий день", zap.String("group", group))
 	// Получение даты, номера и типа недели
-	rows, err := Conn.Queryx(`SELECT idweek,typeweek,date FROM arrays ORDER BY id DESC LIMIT 1`)
+	rows, err := db.Conn.Queryx(`SELECT idweek,typeweek,date FROM arrays ORDER BY id DESC LIMIT 1`)
 	if err != nil {
-		return "", handleError("ошибка при выборке данных из таблицы arrays в функции getPrevSchedule: %w", err)
+		logger.Error("ошибка при выборке данных из таблицы arrays в функции getPrevSchedule", zap.Error(err))
+		return "", err
 	}
 	defer rows.Close()
 
@@ -445,7 +477,8 @@ func getPrevSchedule(group string) (string, error) {
 	for rows.Next() {
 		err := rows.Scan(&idweek, &typeweek, &date)
 		if err != nil {
-			return "", handleError("ошибка при обработке данных из таблицы arrays в функции getPrevSchedule: %w", err)
+			logger.Error("ошибка при обработке данных из таблицы arrays в функции getPrevSchedule", zap.Error(err))
+			return "", err
 		}
 	}
 	dateForm, _ := time.Parse("2006-01-02T15:04:05Z", date)
@@ -463,9 +496,10 @@ func getPrevSchedule(group string) (string, error) {
 	}
 
 	// Получение замен
-	rows, err = Conn.Queryx(`SELECT * FROM replaces WHERE "group" = $1 AND date = $2`, group, prevDate.Format("2006-01-02T15:04:05Z"))
+	rows, err = db.Conn.Queryx(`SELECT * FROM replaces WHERE "group" = $1 AND date = $2`, group, prevDate.Format("2006-01-02T15:04:05Z"))
 	if err != nil {
-		return "", handleError("ошибка при выборке данных из таблицы replaces в функции getPrevSchedule: %w", err)
+		logger.Error("ошибка при выборке данных из таблицы replaces в функции getPrevSchedule", zap.Error(err))
+		return "", err
 	}
 	defer rows.Close()
 
@@ -474,16 +508,18 @@ func getPrevSchedule(group string) (string, error) {
 		r := make(map[string]interface{})
 		err := rows.MapScan(r)
 		if err != nil {
-			return "", handleError("ошибка при обработке данных из таблицы replaces в функции getPrevSchedule: %w", err)
+			logger.Error("ошибка при обработке данных из таблицы replaces в функции getPrevSchedule", zap.Error(err))
+			return "", err
 		}
 
 		replaces = append(replaces, r)
 	}
 
 	// Получение расписания
-	rows, err = Conn.Queryx(`SELECT * FROM schedules WHERE "group" = $1 AND idweek = $2 AND typeweek = $3`, group, idweek, typeweek)
+	rows, err = db.Conn.Queryx(`SELECT * FROM schedules WHERE "group" = $1 AND idweek = $2 AND typeweek = $3`, group, idweek, typeweek)
 	if err != nil {
-		return "", handleError("ошибка при выборке данных из таблицы schedules в функции getPrevSchedule: %w", err)
+		logger.Error("ошибка при выборке данных из таблицы schedules в функции getPrevSchedule", zap.Error(err))
+		return "", err
 	}
 	defer rows.Close()
 
@@ -492,7 +528,8 @@ func getPrevSchedule(group string) (string, error) {
 		r := make(map[string]interface{})
 		err := rows.MapScan(r)
 		if err != nil {
-			return "", handleError("ошибка при обработке данных из таблицы schedules в функции getPrevSchedule: %w", err)
+			logger.Error("ошибка при обработке данных из таблицы schedules в функции getPrevSchedule", zap.Error(err))
+			return "", err
 		}
 
 		schedules = append(schedules, r)
@@ -500,7 +537,8 @@ func getPrevSchedule(group string) (string, error) {
 
 	text, err := GetTextSchedule(2, group, prevDate.Format("02.01.2006"), typeweek, idweek, schedules, replaces)
 	if err != nil {
-		return "", handleError("ошибка при вызове функции GetTextSchedule: %w", err)
+		logger.Error("ошибка при вызове функции GetTextSchedule", zap.Error(err))
+		return "", err
 	}
 
 	return text, nil

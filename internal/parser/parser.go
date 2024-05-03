@@ -1,11 +1,15 @@
-package main
+package parser
 
 import (
 	"crypto/md5"
 	"database/sql"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"raspygk/internal/telegram"
+	"raspygk/pkg/db"
+	"raspygk/pkg/logger"
 	"reflect"
 	"strconv"
 	"strings"
@@ -21,41 +25,43 @@ const (
 )
 
 var (
-	newData_first  [][]string
-	newData_second [][]string
-	oldData_first  [][]string
-	oldData_second [][]string
+	NewData_first  [][]string
+	NewData_second [][]string
+	OldData_first  [][]string
+	OldData_second [][]string
 	debugMode      bool
 )
 
-func Parser() error {
+func Init() error {
 	urls := []string{URL_FIRST, URL_SECOND}
 	checks := make([]bool, len(urls))
-	debugMode = true
+	debugMode = false
 
 	for i, url := range urls {
 		date, id_week, type_week, err := DataProcessing(url)
 		logger.Debug("Дата в цикле", zap.String("date", date))
 		if err != nil {
-			return handleError("ошибка при обработке данных замен", err)
+			logger.Error("ошибка при обработке данных замен", zap.Error(err))
+			return err
 		}
-		if (i == 0 && newData_first != nil) || (i == 1 && newData_second != nil) {
+		if (i == 0 && NewData_first != nil) || (i == 1 && NewData_second != nil) {
 			checks[i], err = InsertData(date, id_week, type_week, i+1)
 			if err != nil {
-				return handleError("ошибка при добавлении данных замен", err)
+				logger.Error("ошибка при добавлении данных замен", zap.Error(err))
+				return err
 			}
 		}
 	}
 
 	if checks[0] && !checks[1] {
 		logger.Info("Замены обновлены только у первой смены")
-		SendToPush(1)
+		telegram.SendToPush(1)
 	} else if !checks[0] && checks[1] {
 		logger.Info("Замены обновлены только у второй смены")
-		SendToPush(2)
+		telegram.SendToPush(2)
 	} else if checks[0] && checks[1] {
 		logger.Info("Замены обновлены у обоих смен")
-		SendToPush(0)
+		telegram.SendToPush(0)
 	}
 
 	return nil
@@ -186,9 +192,9 @@ func DataProcessing(url string) (string, int, string, error) {
 		}
 	}
 	if url == URL_FIRST {
-		newData_first = newData
+		NewData_first = newData
 	} else {
-		newData_second = newData
+		NewData_second = newData
 	}
 
 	logger.Debug("Массив с расписанием", zap.Any("newData", newData))
@@ -205,14 +211,15 @@ func InsertData(date string, id_week int, type_week string, id_shift int) (bool,
 	case 2:
 		column = "result_second"
 	default:
-		return false, handleError("неверный id_shift", nil)
+		logger.Error("неверный id shift")
+		return false, errors.New("неверный id shift")
 	}
 
 	var data [][]string
 	if column == "result_first" {
-		data = newData_first
+		data = NewData_first
 	} else {
-		data = newData_second
+		data = NewData_second
 	}
 
 	hashData, err := GetMD5Hash(data)
@@ -221,9 +228,10 @@ func InsertData(date string, id_week int, type_week string, id_shift int) (bool,
 	}
 	logger.Debug("Получение хеша массива данных", zap.String("hashData", hashData))
 
-	rows, err := Conn.Queryx(`SELECT result_first,result_second FROM arrays WHERE date = $1`, date)
+	rows, err := db.Conn.Queryx(`SELECT result_first,result_second FROM arrays WHERE date = $1`, date)
 	if err != nil && err != sql.ErrNoRows {
-		return false, handleError("ошибка при обновлении к БД arrays", err)
+		logger.Error("ошибка при обновлении к БД arrays", zap.Error(err))
+		return false, err
 	}
 	defer rows.Close()
 
@@ -248,16 +256,18 @@ func InsertData(date string, id_week int, type_week string, id_shift int) (bool,
 	}
 
 	logger.Debug("Запрос к БД", zap.String("query", query))
-	_, err = Conn.Exec(query, hashData, id_week, type_week, date)
+	_, err = db.Conn.Exec(query, hashData, id_week, type_week, date)
 	if err != nil {
-		return false, handleError("ошибка при обновлении к БД arrays", err)
+		logger.Error("ошибка при обновлении к БД arrays", zap.Error(err))
+		return false, err
 	}
 
 	if result_first.Valid || result_second.Valid || debugMode {
 		logger.Debug("Удаление всех замен из таблицы replaces", zap.String("date", date), zap.Int("id_shift", id_shift))
-		_, err = Conn.Exec(`DELETE FROM replaces WHERE date = $1 AND idshift = $2`, date, id_shift)
+		_, err = db.Conn.Exec(`DELETE FROM replaces WHERE date = $1 AND idshift = $2`, date, id_shift)
 		if err != nil {
-			return false, handleError("ошибка при удалении к БД replaces", err)
+			logger.Error("ошибка при удалении строки в БД arrays", zap.Error(err))
+			return false, err
 		}
 	}
 
@@ -276,19 +286,20 @@ func InsertData(date string, id_week int, type_week string, id_shift int) (bool,
 			lesson = item[2]
 		}
 		logger.Info("Добавление замены", zap.Any("item", lesson))
-		_, err := Conn.Exec(`INSERT INTO replaces ("group", lesson, discipline_rasp, discipline_replace, classroom, date, idshift) VALUES ($1, $2, $3, $4, $5, $6, $7)`, item[1], lesson, item[3], item[4], item[5], date, id_shift)
+		_, err := db.Conn.Exec(`INSERT INTO replaces ("group", lesson, discipline_rasp, discipline_replace, classroom, date, idshift) VALUES ($1, $2, $3, $4, $5, $6, $7)`, item[1], lesson, item[3], item[4], item[5], date, id_shift)
 		if err != nil {
-			return false, handleError("ошибка при вставке в БД replaces", err)
+			logger.Error("ошибка при вставке к БД arrays", zap.Error(err))
+			return false, err
 		}
 	}
 
 	logger.Info("1")
 	if column == "result_first" {
-		oldData_first = data
-		logger.Info("Новый массив с расписанием1", zap.Any("data", oldData_first))
+		OldData_first = data
+		logger.Info("Новый массив с расписанием1", zap.Any("data", OldData_first))
 	} else {
-		oldData_second = data
-		logger.Info("Новый массив с расписанием2", zap.Any("data", oldData_second))
+		OldData_second = data
+		logger.Info("Новый массив с расписанием2", zap.Any("data", OldData_second))
 	}
 
 	return true, nil
