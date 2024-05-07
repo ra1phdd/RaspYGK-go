@@ -19,7 +19,7 @@ var (
 		{Value: "MMO", Display: "ММО"},
 		{Value: "OEP", Display: "ОЭП"},
 	}
-	GroupOITButtons = []ButtonOption{
+	GroupsOITButtons = []ButtonOption{
 		{Value: "IS1_11", Display: "ОИТ"},
 		{Value: "IS1_13", Display: "ОАР"},
 		{Value: "IS1_15", Display: "СО"},
@@ -36,7 +36,7 @@ var (
 		{Value: "MMO", Display: "ММО"},
 		{Value: "OEP", Display: "ОЭП"},
 	}
-	GrosupOITButtons = []string{"IS1_11", "IS1_13", "IS1_15", "IS1_21",
+	GroupOITButtons = []string{"IS1_11", "IS1_13", "IS1_15", "IS1_21",
 		"IS1_23", "IS1_25", "IS1_31", "IS1_33",
 		"IS1_35", "IS1_41", "IS1_43", "IS1_45",
 		"SA1_11", "SA1_21", "SA1_31", "SA1_41",
