@@ -1,6 +1,8 @@
 package telegram
 
 import (
+	"raspygk/internal/models"
+
 	tele "gopkg.in/telebot.v3"
 )
 
@@ -9,8 +11,8 @@ func Keyboards(keyboard int) (*tele.ReplyMarkup, map[string]tele.Btn) {
 
 	switch keyboard {
 	case 0:
-		btns := make(map[string]tele.Btn, len(mainButtons))
-		for _, item := range mainButtons {
+		btns := make(map[string]tele.Btn, len(models.MainButtons))
+		for _, item := range models.MainButtons {
 			btns[item.Value] = menu.Text(item.Display)
 		}
 
@@ -24,7 +26,7 @@ func Keyboards(keyboard int) (*tele.ReplyMarkup, map[string]tele.Btn) {
 
 	case 1:
 		var buttonPush string
-		if userState.push == 1 {
+		if userState.Push == 1 {
 			buttonPush = "✅"
 		} else {
 			buttonPush = "❌"
@@ -45,8 +47,8 @@ func Keyboards(keyboard int) (*tele.ReplyMarkup, map[string]tele.Btn) {
 		return menu, btns
 
 	case 2:
-		btns := make(map[string]tele.Btn, len(roleButtons))
-		for _, item := range roleButtons {
+		btns := make(map[string]tele.Btn, len(models.RoleButtons))
+		for _, item := range models.RoleButtons {
 			btns[item.Value] = menu.Data(item.Display, item.Value)
 		}
 
@@ -57,8 +59,8 @@ func Keyboards(keyboard int) (*tele.ReplyMarkup, map[string]tele.Btn) {
 		return menu, btns
 
 	case 3:
-		btns := make(map[string]tele.Btn, len(typeButtons))
-		for _, item := range typeButtons {
+		btns := make(map[string]tele.Btn, len(models.TypeButtons))
+		for _, item := range models.TypeButtons {
 			btns[item.Value] = menu.Data(item.Display, item.Value)
 		}
 
@@ -71,7 +73,7 @@ func Keyboards(keyboard int) (*tele.ReplyMarkup, map[string]tele.Btn) {
 		return menu, btns
 
 	case 4:
-		btns := createGroupButtons(menu, groupOITButtons)
+		btns := createGroupButtons(menu, models.GroupOITButtons)
 		return menu, btns
 
 	default:
