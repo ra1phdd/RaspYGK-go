@@ -47,9 +47,9 @@ func main() {
 	defer ticker.Stop()
 
 	for range ticker.C {
-		err = parser.Init()
+		err := parser.Init()
 		if err != nil {
-			logger.Fatal("ошибка в работе парсера: ", zap.Error(err))
+			logger.Fatal("Ошибка в работе парсера", zap.Error(err))
 		}
 	}
 }

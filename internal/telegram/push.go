@@ -2,18 +2,16 @@ package telegram
 
 import (
 	"fmt"
-	"log"
 	"raspygk/internal/services"
 	"raspygk/pkg/logger"
 	"strconv"
-	"time"
 
 	"go.uber.org/zap"
 	tele "gopkg.in/telebot.v3"
 )
 
 func SendToPush(idshift int) error {
-	data, err := services.GetUserPUSH(idshift, false)
+	data, err := services.GetUserPUSH(idshift, nil)
 	if err != nil {
 		logger.Error("ошибка при получении пользователей с включенными PUSH в функции SendToPush: ", zap.Error(err))
 	}
@@ -25,28 +23,12 @@ func SendToPush(idshift int) error {
 		}
 
 		logger.Info("userid", zap.Any("userid", item[0]), zap.Any("group", item[1]), zap.Any("schedule", schedule))
-		userid := item[0]
-		userID, err := strconv.ParseInt(userid, 10, 64)
-		if err != nil {
-			// Обработка ошибки преобразования
-			log.Printf("Ошибка преобразования userid: %v", err)
-			continue
-		}
+		userID := int64(item[0])
 		chel := &tele.User{ID: userID}
-		go func() {
-			for {
-				time.Sleep(3 * time.Second)
-				if b != nil {
-					_, err := b.Send(chel, schedule)
-					if err != nil {
-						logger.Error("ошибка при отправке PUSH-уведомления пользователю: ", zap.Error(err))
-					}
-					break
-				} else {
-					logger.Error("объект Bot не инициализирован")
-				}
-			}
-		}()
+		_, err = b.Send(chel, schedule)
+		if err != nil {
+			logger.Error("ошибка при отправке PUSH-уведомления пользователю: ", zap.Error(err))
+		}
 	}
 
 	return nil
@@ -63,32 +45,17 @@ func SendToAdmin(text string, userID int64, username string, group string, role 
 }
 
 func SendToAll(text string) error {
-	data, err := services.GetUserPUSH(0, true)
+	data, err := services.GetUserPUSH(0, nil)
 	if err != nil {
 		logger.Error("ошибка при получении пользователей с включенными PUSH в функции SendToPush: ", zap.Error(err))
 	}
 
 	for _, item := range data {
-		logger.Info("userid", zap.Any("userid", item[0]), zap.Any("group", item[1]))
-		userid := item[0]
-		userID, err := strconv.ParseInt(userid, 10, 64)
+		userID, _ := strconv.Atoi(item)
+		chel := &tele.User{ID: int64(userID)}
+		_, err = b.Send(chel, text)
 		if err != nil {
-			// Обработка ошибки преобразования
-			log.Printf("Ошибка преобразования userid: %v", err)
-			continue
-		}
-		chel := &tele.User{ID: userID}
-		for {
-			time.Sleep(3 * time.Second)
-			if b != nil {
-				_, err := b.Send(chel, text)
-				if err != nil {
-					logger.Error("ошибка при отправке PUSH-уведомления пользователю: ", zap.Error(err))
-				}
-				break
-			} else {
-				logger.Error("объект Bot не инициализирован")
-			}
+			logger.Error("ошибка при отправке PUSH-уведомления пользователю: ", zap.Error(err))
 		}
 	}
 

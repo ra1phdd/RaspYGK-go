@@ -19,30 +19,30 @@ var (
 		{Value: "MMO", Display: "ММО"},
 		{Value: "OEP", Display: "ОЭП"},
 	}
-	GroupsOITButtons = []ButtonOption{
-		{Value: "IS1_11", Display: "ОИТ"},
-		{Value: "IS1_13", Display: "ОАР"},
-		{Value: "IS1_15", Display: "СО"},
-		{Value: "IS1_21", Display: "ММО"},
-		{Value: "OEP", Display: "ОЭП"},
-		{Value: "OIT", Display: "ОИТ"},
-		{Value: "OAR", Display: "ОАР"},
-		{Value: "SO", Display: "СО"},
-		{Value: "MMO", Display: "ММО"},
-		{Value: "OEP", Display: "ОЭП"},
-		{Value: "OIT", Display: "ОИТ"},
-		{Value: "OAR", Display: "ОАР"},
-		{Value: "SO", Display: "СО"},
-		{Value: "MMO", Display: "ММО"},
-		{Value: "OEP", Display: "ОЭП"},
+	GroupOITButtons = []ButtonOption{
+		{Value: "IS1_11", Display: "ИС1-11"},
+		{Value: "IS1_13", Display: "ИС1-13"},
+		{Value: "IS1_15", Display: "ИС1-15"},
+		{Value: "IS1_21", Display: "ИС1-21"},
+		{Value: "IS1_23", Display: "ИС1-23"},
+		{Value: "IS1_25", Display: "ИС1-25"},
+		{Value: "IS1_31", Display: "ИС1-31"},
+		{Value: "IS1_33", Display: "ИС1-33"},
+		{Value: "IS1_35", Display: "ИС1-35"},
+		{Value: "IS1_41", Display: "ИС1-41"},
+		{Value: "IS1_43", Display: "ИС1-43"},
+		{Value: "IS1_45", Display: "ИС1-45"},
+		{Value: "SA1_11", Display: "СА1-11"},
+		{Value: "SA1_21", Display: "СА1-21"},
+		{Value: "SA1_31", Display: "СА1-31"},
+		{Value: "SA1_41", Display: "СА1-41"},
+		{Value: "IB1_11", Display: "ИБ1-11"},
+		{Value: "IB1_21", Display: "ИБ1-21"},
+		{Value: "IB1_31", Display: "ИБ1-31"},
+		{Value: "IB1_41", Display: "ИИ1-41"},
 	}
-	GroupOITButtons = []string{"IS1_11", "IS1_13", "IS1_15", "IS1_21",
-		"IS1_23", "IS1_25", "IS1_31", "IS1_33",
-		"IS1_35", "IS1_41", "IS1_43", "IS1_45",
-		"SA1_11", "SA1_21", "SA1_31", "SA1_41",
-		"IB1_11", "IB1_21", "IB1_41", "IB1_21"}
-	GroupOARButtons = []string{}
-	GroupSOButtons  = []string{}
-	GroupMMOButtons = []string{}
-	GroupOEPButtons = []string{}
+	GroupOARButtons = []ButtonOption{}
+	GroupSOButtons  = []ButtonOption{}
+	GroupMMOButtons = []ButtonOption{}
+	GroupOEPButtons = []ButtonOption{}
 )

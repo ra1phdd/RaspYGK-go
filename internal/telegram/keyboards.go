@@ -32,9 +32,7 @@ func Keyboards(keyboard int) (*tele.ReplyMarkup, map[string]tele.Btn) {
 			buttonPush = "❌"
 		}
 
-		// ААААААААААААААААААА
 		btns := make(map[string]tele.Btn)
-
 		btns["changeRole"] = menu.Data("Смена роли", "role")
 		btns["changeGroup"] = menu.Data("Смена группы", "group")
 		btns["changePUSH"] = menu.Data("Получение PUSH-уведомлений "+buttonPush, "push")
@@ -73,33 +71,21 @@ func Keyboards(keyboard int) (*tele.ReplyMarkup, map[string]tele.Btn) {
 		return menu, btns
 
 	case 4:
-		btns := createGroupButtons(menu, models.GroupOITButtons)
+		btns := make(map[string]tele.Btn, len(models.GroupOITButtons))
+		for _, item := range models.GroupOITButtons {
+			btns[item.Value] = menu.Data(item.Display, item.Value)
+		}
+
+		menu.Inline(
+			menu.Row(btns["IS1_11"], btns["IS1_13"], btns["IS1_15"]),
+			menu.Row(btns["IS1_21"], btns["IS1_23"], btns["IS1_25"]),
+			menu.Row(btns["IS1_31"], btns["IS1_33"], btns["IS1_35"]),
+			menu.Row(btns["IS1_41"], btns["IS1_43"], btns["IS1_45"]),
+		)
+
 		return menu, btns
 
 	default:
 		return nil, nil
 	}
-}
-
-func createGroupButtons(menu *tele.ReplyMarkup, groups []string) map[string]tele.Btn {
-	btns := make(map[string]tele.Btn)
-	rows := make([][]tele.Btn, 0)
-	row := make([]tele.Btn, 0)
-
-	for i, group := range groups {
-		btn := menu.Data(group, group)
-		btns[group] = btn
-		row = append(row, btn)
-
-		if (i+1)%4 == 0 || i == len(groups)-1 {
-			rows = append(rows, row)
-			row = make([]tele.Btn, 0)
-		}
-	}
-
-	for _, row := range rows {
-		menu.Inline(menu.Row(row...))
-	}
-
-	return btns
 }

@@ -36,21 +36,9 @@ func GetLessonTime(lesson int64, classroom string, idweek int64) (string, error)
 		case 6:
 			time, ok = WeekendTimeMap[lesson]
 			if idweek >= 1 && idweek <= 5 {
-				if code == 'А' || code == 'Б' || code == 'В' || code == 'М' || classroom == "ДОТ" {
-					time, ok = WeekdayTimeMap[lesson]
-					if !ok {
-						logger.Error("Время пары не найдено")
-						return "", nil
-					}
-				}
+				time, ok = WeekdayTimeMap[lesson]
 			} else if idweek == 6 {
-				if code == 'А' || code == 'Б' || code == 'В' || code == 'М' || classroom == "ДОТ" {
-					time, ok = WeekendTimeMap[lesson]
-					if !ok {
-						logger.Error("Время пары не найдено")
-						return "", nil
-					}
-				}
+				time, ok = WeekendTimeMap[lesson]
 			}
 			if !ok {
 				logger.Error("Время пары не найдено")
@@ -160,7 +148,7 @@ func GetSchedule(group string) (string, error) {
 
 	text, err := GetTextSchedule(0, group, date.Format("02.01.2006"), typeweek, idweek, schedules, replaces)
 	if err != nil {
-		logger.Error("ошибка при вызове функции GetTextSchedule", zap.Error(err))
+		logger.Error("Ошибка при выполнении функции GetTextSchedule()", zap.Error(err))
 		return "", err
 	}
 
@@ -196,7 +184,7 @@ func GetNextSchedule(group string) (string, error) {
 
 	text, err := GetTextSchedule(1, group, nextDate.Format("02.01.2006"), typeweek, idweek, schedules, nil)
 	if err != nil {
-		logger.Error("ошибка при вызове функции GetTextSchedule", zap.Error(err))
+		logger.Error("Ошибка при выполнении функции GetTextSchedule()", zap.Error(err))
 		return "", err
 	}
 
@@ -238,7 +226,7 @@ func GetPrevSchedule(group string) (string, error) {
 
 	text, err := GetTextSchedule(2, group, prevDate.Format("02.01.2006"), typeweek, idweek, schedules, replaces)
 	if err != nil {
-		logger.Error("ошибка при вызове функции GetTextSchedule", zap.Error(err))
+		logger.Error("Ошибка при выполнении функции GetTextSchedule()", zap.Error(err))
 		return "", err
 	}
 
@@ -257,13 +245,12 @@ func FetchLastWeekInfo() (int64, string, time.Time, error) {
 		var result []interface{}
 		err = json.Unmarshal([]byte(data), &result)
 		if err != nil {
-			logger.Error("Ошибка при преобразовании данных из Redis в функции FetchLastWeekInfo()", zap.Error(err))
+			logger.Error("Ошибка при преобразовании данных из Redis", zap.Error(err))
 			return 0, "", time.Time{}, err
 		}
-		logger.Debug("хуйня", zap.Any("result", result))
 		dateForm, err = time.Parse(time.RFC3339, result[2].(string))
 		if err != nil {
-			logger.Error("Ошибка при преобразовании даты из строки в функции FetchLastWeekInfo()", zap.Error(err))
+			logger.Error("Ошибка при преобразовании даты из строки", zap.Error(err))
 			return 0, "", time.Time{}, err
 		}
 		return int64(result[0].(float64)), result[1].(string), dateForm, nil
@@ -272,7 +259,7 @@ func FetchLastWeekInfo() (int64, string, time.Time, error) {
 	// Данных нет в Redis, получаем их из базы данных
 	rows, err := db.Conn.Queryx(`SELECT idweek,typeweek,date FROM arrays ORDER BY id DESC LIMIT 1`)
 	if err != nil {
-		logger.Error("Ошибка при выполнении запроса к таблице arrays в функции FetchLastWeekInfo()", zap.Error(err))
+		logger.Error("Ошибка при выполнении запроса к таблице arrays", zap.Error(err))
 		return 0, "", time.Time{}, err
 	}
 	defer rows.Close()
@@ -280,20 +267,20 @@ func FetchLastWeekInfo() (int64, string, time.Time, error) {
 	for rows.Next() {
 		err := rows.Scan(&idweek, &typeweek, &date)
 		if err != nil {
-			logger.Error("Ошибка при сканировании данных из таблицы arrays в функции FetchLastWeekInfo()", zap.Error(err))
+			logger.Error("Ошибка при сканировании данных из таблицы arrays", zap.Error(err))
 			return 0, "", time.Time{}, err
 		}
 
 		dateForm, err = time.Parse("2006-01-02T15:04:05Z", date)
 		if err != nil {
-			logger.Error("Ошибка при преобразовании даты из таблицы arrays в функции FetchLastWeekInfo()", zap.Error(err))
+			logger.Error("Ошибка при преобразовании даты из таблицы arrays", zap.Error(err))
 			return 0, "", time.Time{}, err
 		}
 	}
 	// Сохраняем данные в Redis
 	dataToStore, err := json.Marshal([]interface{}{idweek, typeweek, dateForm})
 	if err != nil {
-		logger.Error("Ошибка при преобразовании данных для сохранения в Redis в функции FetchLastWeekInfo()", zap.Error(err))
+		logger.Error("Ошибка при преобразовании данных для сохранения в Redis", zap.Error(err))
 		return idweek, typeweek, dateForm, err
 	}
 
