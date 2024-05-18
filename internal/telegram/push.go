@@ -3,6 +3,7 @@ package telegram
 import (
 	"fmt"
 	"raspygk/internal/services"
+	"raspygk/pkg/db"
 	"raspygk/pkg/logger"
 	"strconv"
 
@@ -17,14 +18,22 @@ func SendToPush(idshift int) error {
 	}
 
 	for _, item := range data {
-		schedule, err := services.GetSchedule(fmt.Sprint(item[1]))
+		groupID, err := strconv.Atoi(item[1])
+		if err != nil {
+			logger.Error("ошибка при преобразовании строки в int в функции createHandlerPUSH: ", zap.Error(err))
+		}
+
+		schedule, err := services.GetSchedule(groupID)
 		if err != nil {
 			logger.Error("ошибка при получении расписания в функции createHandlerPUSH: ", zap.Error(err))
 		}
 
 		logger.Info("userid", zap.Any("userid", item[0]), zap.Any("group", item[1]), zap.Any("schedule", schedule))
-		userID := int64(item[0])
-		chel := &tele.User{ID: userID}
+		userID, err := strconv.Atoi(item[0])
+		if err != nil {
+			logger.Error("ошибка при преобразовании строки в int в функции createHandlerPUSH: ", zap.Error(err))
+		}
+		chel := &tele.User{ID: int64(userID)}
 		_, err = b.Send(chel, schedule)
 		if err != nil {
 			logger.Error("ошибка при отправке PUSH-уведомления пользователю: ", zap.Error(err))
@@ -34,9 +43,16 @@ func SendToPush(idshift int) error {
 	return nil
 }
 
-func SendToAdmin(text string, userID int64, username string, group string, role string) error {
+func SendToAdmin(text string, userID int64, username string, idGroup int, role int) error {
+	var group string
+	err := db.Conn.QueryRowx(`SELECT name FROM groups WHERE id = $1`, idGroup).Scan(&group)
+	if err != nil {
+		logger.Error("ошибка при выборке данных из таблицы groups в функции UpdateGroup", zap.Error(err))
+		return err
+	}
+
 	chel := &tele.User{ID: 1230045591}
-	_, err := b.Send(chel, "Сообщение от пидораса с ID "+fmt.Sprint(userID)+" ("+fmt.Sprint(username)+") из группы "+group+": "+text)
+	_, err = b.Send(chel, "Сообщение от пидораса с ID "+fmt.Sprint(userID)+" ("+fmt.Sprint(username)+") из группы "+group+": "+text)
 	if err != nil {
 		logger.Error("ошибка при отправке сообщения админу: ", zap.Error(err))
 	}
@@ -51,7 +67,11 @@ func SendToAll(text string) error {
 	}
 
 	for _, item := range data {
-		userID, _ := strconv.Atoi(item)
+		userID, err := strconv.Atoi(item[0])
+		if err != nil {
+			logger.Error("ошибка при преобразовании строки в int в функции createHandlerPUSH: ", zap.Error(err))
+		}
+
 		chel := &tele.User{ID: int64(userID)}
 		_, err = b.Send(chel, text)
 		if err != nil {

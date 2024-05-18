@@ -3,13 +3,12 @@ package models
 import tele "gopkg.in/telebot.v3"
 
 type UserState struct {
-	ID     int
 	ChatID int64
 	UserID int64
 	Name   string
-	Group  string
-	Role   string
-	Push   int
+	Group  int
+	Role   int
+	Push   bool
 }
 
 type Buttons struct {

@@ -26,7 +26,7 @@ func Keyboards(keyboard int) (*tele.ReplyMarkup, map[string]tele.Btn) {
 
 	case 1:
 		var buttonPush string
-		if userState.Push == 1 {
+		if userState.Push {
 			buttonPush = "✅"
 		} else {
 			buttonPush = "❌"

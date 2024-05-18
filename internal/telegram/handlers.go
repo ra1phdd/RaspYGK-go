@@ -1,6 +1,7 @@
 package telegram
 
 import (
+	"fmt"
 	"raspygk/internal/models"
 	"raspygk/internal/services"
 	"raspygk/pkg/logger"
@@ -21,6 +22,7 @@ const (
 )
 
 var userStates = make(map[int64]State)
+var SendUserIDMessage int64
 
 func HandlerBot() {
 	b.Use(func(next tele.HandlerFunc) tele.HandlerFunc {
@@ -29,13 +31,13 @@ func HandlerBot() {
 			userState.ChatID = c.Chat().ID
 			userState.UserID = c.Sender().ID
 			userState.Name = c.Sender().Username
-			userState.ID, userState.Group, userState.Role, userState.Push, err = services.GetUserData(userState.UserID)
+			userState.Group, userState.Role, userState.Push, err = services.GetUserData(userState.UserID)
 			if err != nil {
 				logger.Error("ошибка при получении данных пользователя: ", zap.Error(err))
 				return err
 			}
 
-			if (userState.Role == "" || userState.Group == "") && c.Text() != "/start" && c.Callback() == nil {
+			if (userState.Role == 0 || userState.Group == 0) && c.Text() != "/start" && c.Callback() == nil {
 				c.Send("Чтобы начать пользоваться ботом, введите /start")
 			}
 
@@ -48,21 +50,23 @@ func HandlerBot() {
 
 		menu, _ := Keyboards(0)
 		c.Send("Добро пожаловать! Это неофициальный бот для получения расписания в ЯГК.", menu)
-		if userState.ID == 0 {
+		fmt.Println(userState.Group, userState.Role)
+		if userState.Group == 0 && userState.Role == 0 {
 			err := services.AddUser(userState.UserID)
 			if err != nil {
 				logger.Error("ошибка добавления пользователя: ", zap.Error(err))
 			}
 		}
-		if userState.Role == "" {
+		if userState.Role == 0 {
 			menu, btns := Keyboards(2)
 			for _, key := range models.RoleButtons {
 				button := btns[key.Value]
 				b.Handle(&button, createHandlerRole(models.TypeButtons, button.Text))
 			}
 			c.EditOrSend("Выберите роль:", menu)
+			return nil
 		}
-		if userState.Group == "" {
+		if userState.Group == 0 {
 			menu, btns := Keyboards(3)
 			for _, key := range models.TypeButtons {
 				button := btns[key.Value]
@@ -187,7 +191,6 @@ func HandlerBot() {
 
 	b.Handle(tele.OnText, func(c tele.Context) error {
 		state := userStates[c.Sender().ID]
-		var SendUserIDMessage int64
 
 		switch state {
 		case StateTextSupport:
@@ -251,7 +254,14 @@ func HandlerBot() {
 
 func createHandlerRole(typeButtons []models.ButtonOption, text string) func(c tele.Context) error {
 	return func(c tele.Context) error {
-		err := services.UpdateRole(text, userState.UserID)
+		var role int
+		switch text {
+		case "Студент":
+			role = 1
+		case "Преподаватель":
+			role = 2
+		}
+		err := services.UpdateRole(role, userState.UserID)
 		if err != nil {
 			logger.Error("ошибка при обновлении роли в функции createHandlerRole: ", zap.Error(err))
 			c.EditOrSend("Произошла ошибка! Повторите попытку позже или обратитесь в техподдержку")
@@ -317,10 +327,10 @@ func createHandlerPUSH() func(c tele.Context) error {
 	return func(c tele.Context) error {
 		var err error
 
-		if userState.Push == 1 {
-			err = services.UpdatePUSH(0, userState.UserID)
+		if userState.Push {
+			err = services.UpdatePUSH(false, userState.UserID)
 		} else {
-			err = services.UpdatePUSH(1, userState.UserID)
+			err = services.UpdatePUSH(true, userState.UserID)
 		}
 
 		if err != nil {

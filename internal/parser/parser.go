@@ -10,12 +10,11 @@ import (
 	"raspygk/internal/telegram"
 	"raspygk/pkg/db"
 	"raspygk/pkg/logger"
-	"reflect"
 	"strconv"
 	"strings"
 	"time"
 
-	colly "github.com/gocolly/colly/v2"
+	"github.com/gocolly/colly/v2"
 	"go.uber.org/zap"
 )
 
@@ -25,27 +24,22 @@ const (
 )
 
 var (
-	NewData_first  [][]string
-	NewData_second [][]string
-	OldData_first  [][]string
-	OldData_second [][]string
-	debugMode      bool
+	dataFirst  [][]string
+	dataSecond [][]string
 )
 
 func Init() error {
 	urls := []string{URL_FIRST, URL_SECOND}
 	checks := make([]bool, len(urls))
-	debugMode = false
 
 	for i, url := range urls {
-		date, id_week, type_week, err := DataProcessing(url)
-		logger.Debug("Дата в цикле", zap.String("date", date))
+		date, idWeek, typeWeek, err := ParserData(url)
 		if err != nil {
 			logger.Error("ошибка при обработке данных замен", zap.Error(err))
 			return err
 		}
-		if (i == 0 && NewData_first != nil) || (i == 1 && NewData_second != nil) {
-			checks[i], err = InsertData(date, id_week, type_week, i+1)
+		if (i == 0 && dataFirst != nil) || (i == 1 && dataSecond != nil) {
+			checks[i], err = InsertData(date, idWeek, typeWeek, i+1)
 			if err != nil {
 				logger.Error("ошибка при добавлении данных замен", zap.Error(err))
 				return err
@@ -67,73 +61,20 @@ func Init() error {
 	return nil
 }
 
-func DataProcessing(url string) (string, int, string, error) {
+func ParserData(url string) (string, int, int, error) {
 	logger.Info("Парсинг HTML-расписания", zap.String("url", url))
 
 	c := colly.NewCollector()
 
 	var date string
-	var id_week int
-	var type_week string
+	var idWeek, typeWeek int
 
-	// Нахождение даты
 	c.OnHTML("div > div:nth-of-type(2)", func(e *colly.HTMLElement) {
-		logger.Debug("Получение string с датой", zap.String("text", e.Text))
-		text := e.Text
-
-		search := []string{"в расписании на ", " года / ", "понедельник", "вторник", "среда", "четверг", "пятница", "суббота"}
-
-		for _, s := range search {
-			text = strings.Replace(text, s, "", -1)
-		}
-
-		logger.Debug("Обработанный string с датой", zap.String("text", text))
-
-		months := map[string]string{
-			"января":   "01",
-			"февраля":  "02",
-			"марта":    "03",
-			"апреля":   "04",
-			"мая":      "05",
-			"июня":     "06",
-			"июля":     "07",
-			"августа":  "08",
-			"сентября": "09",
-			"октября":  "10",
-			"ноября":   "11",
-			"декабря":  "12",
-		}
-
-		for month, number := range months {
-			text = strings.Replace(text, month, number, -1)
-		}
-
-		logger.Debug("Замена месяца в дате на числовой формат", zap.String("text", text))
-
-		text = strings.Replace(text, " ", ".", -1)
-
-		t, _ := time.Parse("2.01.2006", text)
-		date = t.Format("2006-01-02")
-
-		week := t.Weekday()
-		id_week = int(week)
-
-		logger.Debug("Дата", zap.String("date", date), zap.Int("id_week", id_week))
+		date, idWeek = ParseDate(e)
 	})
 
-	// Нахождение числителя и знаменателя
 	c.OnHTML("div > div:nth-of-type(3)", func(e *colly.HTMLElement) {
-		text := e.Text
-
-		search := []string{"(", ") Первая смена", ") Вторая смена"}
-
-		for _, s := range search {
-			text = strings.Replace(text, s, "", -1)
-		}
-
-		type_week = text
-
-		logger.Debug("Тип недели", zap.String("type_week", type_week))
+		typeWeek = ParseTypeWeek(e)
 	})
 
 	data := make([]string, 0)
@@ -149,157 +90,215 @@ func DataProcessing(url string) (string, int, string, error) {
 		}
 	})
 
-	c.Visit(url)
+	err := c.Visit(url)
+	if err != nil {
+		return "", 0, 0, err
+	}
+
+	c.Wait()
 
 	result := chunkArray(data, 6)
 
-	var newData [][]string
+	if url == URL_FIRST {
+		dataFirst = DataProccessing(result)
+	} else {
+		dataSecond = DataProccessing(result)
+	}
+
+	return date, idWeek, typeWeek, nil
+}
+
+func ParseDate(e *colly.HTMLElement) (string, int) {
+	search := []string{"в расписании на ", " года / ", "понедельник", "вторник", "среда", "четверг", "пятница", "суббота"}
+
+	text := e.Text
+	for _, s := range search {
+		text = strings.Replace(text, s, "", -1)
+	}
+
+	months := map[string]string{
+		"января":   "01",
+		"февраля":  "02",
+		"марта":    "03",
+		"апреля":   "04",
+		"мая":      "05",
+		"июня":     "06",
+		"июля":     "07",
+		"августа":  "08",
+		"сентября": "09",
+		"октября":  "10",
+		"ноября":   "11",
+		"декабря":  "12",
+	}
+
+	for month, number := range months {
+		text = strings.Replace(text, month, number, -1)
+	}
+
+	text = strings.Replace(text, " ", ".", -1)
+
+	t, _ := time.Parse("2.01.2006", text)
+	date := t.Format("2006-01-02")
+
+	week := t.Weekday()
+	idWeek := int(week)
+
+	return date, idWeek
+}
+
+func ParseTypeWeek(e *colly.HTMLElement) int {
+	search := []string{"(", ") Первая смена", ") Вторая смена"}
+
+	text := e.Text
+	for _, s := range search {
+		text = strings.Replace(text, s, "", -1)
+	}
+
+	var typeWeek int
+	switch text {
+	case "Числитель":
+		typeWeek = 1
+	case "Знаменатель":
+		typeWeek = 2
+	}
+
+	return typeWeek
+}
+
+func DataProccessing(result [][]string) [][]string {
+	var data [][]string
 
 	for _, item := range result {
-		if item[2] != "" {
-			item[3] = strings.Replace(item[3], "...", "по расписанию", -1)
+		if item[2] == "" {
+			continue
+		}
 
-			values2 := strings.Split(item[2], ",")
-			values3 := strings.Split(item[3], ",")
-			values5 := strings.Split(item[5], ",")
+		item[3] = strings.Replace(item[3], "...", "по расписанию", -1)
 
-			for i := 0; i < len(values2); i++ {
-				newItem := make([]string, len(item))
-				copy(newItem, item)
+		values2 := strings.Split(item[2], ",")
+		values3 := strings.Split(item[3], ",")
+		values5 := strings.Split(item[5], ",")
 
-				newItem[2] = getValue(values2, i)
-				newItem[3] = getValue(values3, i)
-				newItem[5] = getValue(values5, i)
+		for i := 0; i < len(values2); i++ {
+			newItem := make([]string, len(item))
+			copy(newItem, item)
 
-				if strings.Contains(newItem[2], "-") {
-					rangeValues := strings.Split(newItem[2], "-")
-					if len(rangeValues) > 1 {
-						start, _ := strconv.Atoi(rangeValues[0])
-						end, _ := strconv.Atoi(rangeValues[1])
+			newItem[2] = values2[i]
+			if i < len(values3) {
+				newItem[3] = values3[i]
+			}
+			if i < len(values5) {
+				newItem[5] = values5[i]
+			}
 
-						for j := start; j <= end; j++ {
-							newItemCopy := make([]string, len(newItem))
-							copy(newItemCopy, newItem)
-							newItemCopy[2] = strconv.Itoa(j)
-							fmt.Println(newItemCopy)
-							newData = append(newData, newItemCopy)
-						}
-					}
-				} else {
-					newData = append(newData, newItem)
-				}
+			if !strings.Contains(newItem[2], "-") {
+				data = append(data, newItem)
+				continue
+			}
+
+			rangeValues := strings.Split(newItem[2], "-")
+			if len(rangeValues) != 2 {
+				continue
+			}
+
+			start, _ := strconv.Atoi(rangeValues[0])
+			end, _ := strconv.Atoi(rangeValues[1])
+
+			for j := start; j <= end; j++ {
+				newItemCopy := make([]string, len(newItem))
+				copy(newItemCopy, newItem)
+				newItemCopy[2] = strconv.Itoa(j)
+				data = append(data, newItemCopy)
 			}
 		}
 	}
-	if url == URL_FIRST {
-		NewData_first = newData
-	} else {
-		NewData_second = newData
-	}
 
-	logger.Debug("Массив с расписанием", zap.Any("newData", newData))
-	return date, id_week, type_week, nil
+	return data
 }
 
-func InsertData(date string, id_week int, type_week string, id_shift int) (bool, error) {
-	logger.Info("Добавление данных в БД", zap.String("date", date), zap.Int("id_week", id_week), zap.String("type_week", type_week), zap.Int("id_shift", id_shift))
-
+func InsertData(date string, idWeek int, typeWeek int, idShift int) (bool, error) {
 	var column string
-	switch id_shift {
+	var data [][]string
+
+	switch idShift {
 	case 1:
 		column = "result_first"
+		data = dataFirst
 	case 2:
 		column = "result_second"
+		data = dataSecond
 	default:
 		logger.Error("неверный id shift")
 		return false, errors.New("неверный id shift")
-	}
-
-	var data [][]string
-	if column == "result_first" {
-		data = NewData_first
-	} else {
-		data = NewData_second
 	}
 
 	hashData, err := GetMD5Hash(data)
 	if err != nil {
 		logger.Error("ошибка при получении хеша массива данных", zap.Error(err))
 	}
-	logger.Debug("Получение хеша массива данных", zap.String("hashData", hashData))
 
-	rows, err := db.Conn.Queryx(`SELECT result_first,result_second FROM arrays WHERE date = $1`, date)
-	if err != nil && err != sql.ErrNoRows {
-		logger.Error("ошибка при обновлении к БД arrays", zap.Error(err))
+	rows, err := db.Conn.Queryx(`SELECT id,result_first,result_second FROM hashes WHERE date = $1`, date)
+	if err != nil {
+		logger.Error("ошибка при обновлении2 к БД arrays", zap.Error(err))
 		return false, err
 	}
 	defer rows.Close()
 
-	var result_first sql.NullString
-	var result_second sql.NullString
-	for rows.Next() {
-		rows.Scan(&result_first, &result_second)
+	var result_first, result_second sql.NullString
+	var idArrays int
+
+	// Проверяем, есть ли результаты
+	if !rows.Next() {
+		query := fmt.Sprintf(`INSERT INTO hashes (%s, idweek, typeweek, date) VALUES ($1, $2, $3, $4) RETURNING id`, column)
+		err := db.Conn.QueryRow(query, column, idWeek, typeWeek, date).Scan(&idArrays)
+		if err != nil {
+			logger.Error("ошибка при обновлении1 к БД arrays", zap.Error(err))
+			return false, err
+		}
+	} else {
+		err := rows.Scan(&idArrays, &result_first, &result_second)
+		if err != nil {
+			logger.Error("ошибка при обработке данных из таблицы users в функции getUserData", zap.Error(err))
+			return false, err
+		}
 	}
 
-	logger.Debug("Полученные данные из БД", zap.String("result_first", result_first.String), zap.String("result_second", result_second.String))
-
 	var query string
-	if !result_first.Valid && !result_second.Valid {
-		logger.Debug("Добавление хеша в таблицу arrays", zap.String("column", column))
-		query = fmt.Sprintf(`INSERT INTO arrays (%s, idweek, typeweek, date) VALUES ($1, $2, $3, $4)`, column)
-	} else if (column == "result_first" && result_first.String != hashData) || (column == "result_second" && result_second.String != hashData) || debugMode {
+	if (idShift == 1 && result_first.String != hashData) || (idShift == 2 && result_second.String != hashData) {
 		logger.Debug("Обновление существующего хеша в таблице arrays", zap.String("column", column))
-		query = fmt.Sprintf(`UPDATE arrays SET %s = $1, idweek = $2, typeweek = $3 WHERE date = $4`, column)
+		query = fmt.Sprintf(`UPDATE hashes SET %s = $1, idweek = $2, typeweek = $3 WHERE date = $4 RETURNING id`, column)
 	} else {
 		logger.Debug("Хеш совпадает, пропуск")
 		return false, nil
 	}
-
-	logger.Debug("Запрос к БД", zap.String("query", query))
-	_, err = db.Conn.Exec(query, hashData, id_week, type_week, date)
+	err = db.Conn.QueryRow(query, hashData, idWeek, typeWeek, date).Scan(&idArrays)
 	if err != nil {
-		logger.Error("ошибка при обновлении к БД arrays", zap.Error(err))
+		logger.Error("Ошибка при получении id после вставки", zap.Error(err))
 		return false, err
 	}
 
-	if result_first.Valid || result_second.Valid || debugMode {
-		logger.Debug("Удаление всех замен из таблицы replaces", zap.String("date", date), zap.Int("id_shift", id_shift))
-		_, err = db.Conn.Exec(`DELETE FROM replaces WHERE date = $1 AND idshift = $2`, date, id_shift)
+	if result_first.Valid || result_second.Valid {
+		_, err = db.Conn.Exec(`DELETE FROM replaces WHERE date = $1 AND "group" IN (SELECT id FROM groups WHERE idshift = $2)`, date, idShift)
 		if err != nil {
 			logger.Error("ошибка при удалении строки в БД arrays", zap.Error(err))
 			return false, err
 		}
 	}
 
-	logger.Debug("Добавление замен в таблицу replaces", zap.Any("data", data))
 	for _, item := range data {
-		var lesson any
-		logger.Info("Время", zap.Any("item", item[2]))
-		fmt.Println(reflect.TypeOf(item[2]))
-		if item[2] == "7.40" {
-			lesson = 10
-		} else if item[2] == "8.00" {
-			lesson = 0
-		} else if item[2] == "8.25" {
-			lesson = 11
-		} else {
-			lesson = item[2]
+		var lesson int
+
+		textLesson := strings.Replace(item[2], ".", "", -1)
+		lesson, err := strconv.Atoi(textLesson)
+		if err != nil {
+			logger.Error("Ошибка преобразования lesson в функции InsertData()")
 		}
-		logger.Info("Добавление замены", zap.Any("item", lesson))
-		_, err := db.Conn.Exec(`INSERT INTO replaces ("group", lesson, discipline_rasp, discipline_replace, classroom, date, idshift) VALUES ($1, $2, $3, $4, $5, $6, $7)`, item[1], lesson, item[3], item[4], item[5], date, id_shift)
+
+		_, err = db.Conn.Exec(`INSERT INTO replaces ("group", lesson, discipline_rasp, discipline_replace, classroom, idarrays, date) VALUES ((SELECT id FROM groups WHERE name = $1), $2, $3, $4, $5, $6, $7)`, item[1], lesson, item[3], item[4], item[5], idArrays, date)
 		if err != nil {
 			logger.Error("ошибка при вставке к БД arrays", zap.Error(err))
 			return false, err
 		}
-	}
-
-	logger.Info("1")
-	if column == "result_first" {
-		OldData_first = data
-		logger.Info("Новый массив с расписанием1", zap.Any("data", OldData_first))
-	} else {
-		OldData_second = data
-		logger.Info("Новый массив с расписанием2", zap.Any("data", OldData_second))
 	}
 
 	return true, nil
@@ -315,13 +314,6 @@ func chunkArray(data []string, chunkSize int) [][]string {
 		chunks = append(chunks, data[i:end])
 	}
 	return chunks
-}
-
-func getValue(values []string, i int) string {
-	if i < len(values) {
-		return values[i]
-	}
-	return values[len(values)-1]
 }
 
 func GetMD5Hash(data [][]string) (string, error) {

@@ -12,8 +12,8 @@ import (
 	"go.uber.org/zap"
 )
 
-func GetLessonTime(lesson int64, classroom string, idweek int64) (string, error) {
-	logger.Info("Получение времени занятия", zap.Int64("lesson", lesson), zap.String("classroom", classroom), zap.Int64("idweek", idweek))
+func GetLessonTime(lesson int64, classroom string, idweek int) (string, error) {
+	logger.Info("Получение времени занятия", zap.Int64("lesson", lesson), zap.String("classroom", classroom), zap.Int("idweek", idweek))
 
 	if classroom == "" {
 		return "", nil
@@ -51,8 +51,8 @@ func GetLessonTime(lesson int64, classroom string, idweek int64) (string, error)
 	return time, nil
 }
 
-func GetTextSchedule(type_id int64, group string, date string, typeweek string, idweek int64, schedules []map[string]interface{}, replaces []map[string]interface{}) (string, error) {
-	logger.Info("Получение текста расписания", zap.Int64("type_id", type_id), zap.String("group", group), zap.String("date", date), zap.String("typeweek", typeweek), zap.Int64("idweek", idweek))
+func GetTextSchedule(type_id int64, idGroup int, date string, typeweek int, idweek int, schedules []map[string]interface{}, replaces []map[string]interface{}) (string, error) {
+	logger.Info("Получение текста расписания", zap.Int64("type_id", type_id), zap.Int("group", idGroup), zap.String("date", date), zap.Int("typeweek", typeweek), zap.Int("idweek", idweek))
 
 	daysOfWeek := []string{"", "понедельник", "вторник", "среду", "четверг", "пятницу", "субботу"}
 	if idweek < 1 || idweek > 6 {
@@ -61,7 +61,22 @@ func GetTextSchedule(type_id int64, group string, date string, typeweek string, 
 	}
 	week := daysOfWeek[idweek]
 
-	text := "Расписание " + group + " на " + week + ", " + date + " (" + typeweek + "):\n"
+	var group string
+	err := db.Conn.QueryRowx(`SELECT name FROM groups WHERE id = $1`, idGroup).Scan(&group)
+	if err != nil {
+		logger.Error("ошибка при выборке данных из таблицы groups в функции UpdateGroup", zap.Error(err))
+		return "", err
+	}
+
+	var textweek string
+	switch typeweek {
+	case 1:
+		textweek = "Числитель"
+	case 2:
+		textweek = "Знаменатель"
+	}
+
+	text := "Расписание " + group + " на " + week + ", " + date + " (" + textweek + "):\n"
 
 	for _, schedule := range schedules {
 		lesson := schedule["lesson"].(int64)
@@ -125,8 +140,8 @@ func GetTextSchedule(type_id int64, group string, date string, typeweek string, 
 	return text, nil
 }
 
-func GetSchedule(group string) (string, error) {
-	logger.Info("Получение расписания", zap.String("group", group))
+func GetSchedule(group int) (string, error) {
+	logger.Info("Получение расписания", zap.Int("group", group))
 
 	idweek, typeweek, date, err := FetchLastWeekInfo()
 	if err != nil {
@@ -155,8 +170,8 @@ func GetSchedule(group string) (string, error) {
 	return text, nil
 }
 
-func GetNextSchedule(group string) (string, error) {
-	logger.Info("Получение расписания на следующий день", zap.String("group", group))
+func GetNextSchedule(group int) (string, error) {
+	logger.Info("Получение расписания на следующий день", zap.Int("group", group))
 
 	idweek, typeweek, date, err := FetchLastWeekInfo()
 	if err != nil {
@@ -168,8 +183,8 @@ func GetNextSchedule(group string) (string, error) {
 	idweek++
 	if idweek == 7 {
 		idweek = 1
-		if typeweek == "Числитель" {
-			typeweek = "Знаменатель"
+		if typeweek == 0 {
+			typeweek = 1
 		}
 		nextDate = date.AddDate(0, 0, 2)
 	} else {
@@ -191,8 +206,8 @@ func GetNextSchedule(group string) (string, error) {
 	return text, nil
 }
 
-func GetPrevSchedule(group string) (string, error) {
-	logger.Info("Получение расписания на предыдущий день", zap.String("group", group))
+func GetPrevSchedule(group int) (string, error) {
+	logger.Info("Получение расписания на предыдущий день", zap.Int("group", group))
 
 	idweek, typeweek, date, err := FetchLastWeekInfo()
 	if err != nil {
@@ -204,8 +219,8 @@ func GetPrevSchedule(group string) (string, error) {
 	idweek--
 	if idweek == 0 {
 		idweek = 6
-		if typeweek == "Числитель" {
-			typeweek = "Знаменатель"
+		if typeweek == 0 {
+			typeweek = 1
 		}
 		prevDate = date.AddDate(0, 0, -2)
 	} else {
@@ -233,9 +248,9 @@ func GetPrevSchedule(group string) (string, error) {
 	return text, nil
 }
 
-func FetchLastWeekInfo() (int64, string, time.Time, error) {
-	var idweek int64
-	var typeweek string
+func FetchLastWeekInfo() (int, int, time.Time, error) {
+	var idweek int
+	var typeweek int
 	var date string
 	var dateForm time.Time
 	var err error
@@ -246,21 +261,21 @@ func FetchLastWeekInfo() (int64, string, time.Time, error) {
 		err = json.Unmarshal([]byte(data), &result)
 		if err != nil {
 			logger.Error("Ошибка при преобразовании данных из Redis", zap.Error(err))
-			return 0, "", time.Time{}, err
+			return 0, 0, time.Time{}, err
 		}
 		dateForm, err = time.Parse(time.RFC3339, result[2].(string))
 		if err != nil {
 			logger.Error("Ошибка при преобразовании даты из строки", zap.Error(err))
-			return 0, "", time.Time{}, err
+			return 0, 0, time.Time{}, err
 		}
-		return int64(result[0].(float64)), result[1].(string), dateForm, nil
+		return int(result[0].(float64)), int(result[1].(float64)), dateForm, nil
 	}
 
 	// Данных нет в Redis, получаем их из базы данных
-	rows, err := db.Conn.Queryx(`SELECT idweek,typeweek,date FROM arrays ORDER BY id DESC LIMIT 1`)
+	rows, err := db.Conn.Queryx(`SELECT idweek,typeweek,date FROM hashes ORDER BY id DESC LIMIT 1`)
 	if err != nil {
 		logger.Error("Ошибка при выполнении запроса к таблице arrays", zap.Error(err))
-		return 0, "", time.Time{}, err
+		return 0, 0, time.Time{}, err
 	}
 	defer rows.Close()
 
@@ -268,13 +283,13 @@ func FetchLastWeekInfo() (int64, string, time.Time, error) {
 		err := rows.Scan(&idweek, &typeweek, &date)
 		if err != nil {
 			logger.Error("Ошибка при сканировании данных из таблицы arrays", zap.Error(err))
-			return 0, "", time.Time{}, err
+			return 0, 0, time.Time{}, err
 		}
 
 		dateForm, err = time.Parse("2006-01-02T15:04:05Z", date)
 		if err != nil {
 			logger.Error("Ошибка при преобразовании даты из таблицы arrays", zap.Error(err))
-			return 0, "", time.Time{}, err
+			return 0, 0, time.Time{}, err
 		}
 	}
 	// Сохраняем данные в Redis
@@ -292,7 +307,7 @@ func FetchLastWeekInfo() (int64, string, time.Time, error) {
 	return idweek, typeweek, dateForm, nil
 }
 
-func FetchReplaces(group string, date time.Time) ([]map[string]interface{}, error) {
+func FetchReplaces(group int, date time.Time) ([]map[string]interface{}, error) {
 	var replacesSlice []map[string]interface{}
 
 	replaces, err := cache.Rdb.Get(cache.Ctx, "Replaces_"+fmt.Sprint(group)+"_"+fmt.Sprint(date)).Result()
@@ -306,7 +321,6 @@ func FetchReplaces(group string, date time.Time) ([]map[string]interface{}, erro
 		for i := range replacesSlice {
 			replacesSlice[i]["id"] = int64(replacesSlice[i]["id"].(float64))
 			replacesSlice[i]["lesson"] = int64(replacesSlice[i]["lesson"].(float64))
-			replacesSlice[i]["idshift"] = int64(replacesSlice[i]["idshift"].(float64))
 		}
 
 		return replacesSlice, nil
@@ -344,7 +358,7 @@ func FetchReplaces(group string, date time.Time) ([]map[string]interface{}, erro
 	return replacesSlice, nil
 }
 
-func FetchSchedules(group string, idweek int64, typeweek string) ([]map[string]interface{}, error) {
+func FetchSchedules(group int, idweek int, typeweek int) ([]map[string]interface{}, error) {
 	var schedulesSlice []map[string]interface{}
 
 	schedules, err := cache.Rdb.Get(cache.Ctx, "Schedules_"+fmt.Sprint(group)+"_"+fmt.Sprint(idweek)+"_"+fmt.Sprint(typeweek)).Result()
@@ -359,15 +373,16 @@ func FetchSchedules(group string, idweek int64, typeweek string) ([]map[string]i
 			schedulesSlice[i]["id"] = int64(schedulesSlice[i]["id"].(float64))
 			schedulesSlice[i]["lesson"] = int64(schedulesSlice[i]["lesson"].(float64))
 			schedulesSlice[i]["idweek"] = int64(schedulesSlice[i]["idweek"].(float64))
+			schedulesSlice[i]["typeweek"] = int64(schedulesSlice[i]["typeweek"].(float64))
 		}
 
 		return schedulesSlice, nil
 	}
 
 	// Данных нет в Redis, получаем их из базы данных
-	rows, err := db.Conn.Queryx(`SELECT * FROM schedules WHERE "group" = $1 AND idweek = $2 AND typeweek = $3`, group, idweek, typeweek)
+	rows, err := db.Conn.Queryx(`SELECT * FROM schedules WHERE "group" = $1 AND idweek = $2 AND (typeweek = $3 OR typeweek = 0)`, group, idweek, typeweek)
 	if err != nil {
-		logger.Error("Ошибка при выполнении запроса к таблице replaces в функции FetchReplaces()", zap.Error(err))
+		logger.Error("Ошибка при выполнении запроса к таблице schedules в функции FetchReplaces()", zap.Error(err))
 		return schedulesSlice, err
 	}
 	defer rows.Close()
