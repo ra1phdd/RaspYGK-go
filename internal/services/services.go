@@ -86,10 +86,16 @@ func GetUserData(user_id int64) (int, int, bool, error) {
 	return int(group.Int32), int(role.Int32), push.Bool, nil
 }
 
-func GetUserPUSH(idshift int, dataGroup []string) ([][]string, error) {
+func GetUserPUSH(idshift int, ignoreSettings bool, dataGroup []string) ([][]string, error) {
 	logger.Info("Получение данных о пользователях, у которых включены PUSH-уведомления", zap.Int("idshift", idshift))
 
-	rows, err := db.Conn.Queryx(`SELECT userid, "group" FROM users`)
+	var query string
+	if ignoreSettings {
+		query = `SELECT userid, "group" FROM users`
+	} else {
+		query = `SELECT userid, "group" FROM users WHERE push = true`
+	}
+	rows, err := db.Conn.Queryx(query)
 	if err != nil {
 		logger.Error("ошибка при выборке данных из таблицы users в функции GetUserPUSH", zap.Error(err))
 		return nil, err

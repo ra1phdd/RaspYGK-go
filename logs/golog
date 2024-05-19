@@ -11940,3 +11940,46 @@
 {"level":"info","ts":"2024-05-18T20:36:06.359+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301","idweek":1}
 {"level":"debug","ts":"2024-05-18T20:36:06.359+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
 {"level":"debug","ts":"2024-05-18T20:36:06.359+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на понедельник, 20.05.2024 (Знаменатель):\n0 пара [Б301] (08:00) МДК 02.02/теория Пронина Л.Ю. (❗замена)\n1 пара [Б101] (09:20) Осн.проект.БД Гудкова А.Л. (❗замена)\n2 пара [Б301] (11:00) 1,2 п/гр. Гудкова А.Л. (❗замена)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-18T21:35:27.907+0300","caller":"logger/logger.go:54","msg":"Парсинг HTML-расписания","url":"https://menu.sttec.yar.ru/timetable/rasp_first.html"}
+{"level":"debug","ts":"2024-05-18T21:35:28.339+0300","caller":"logger/logger.go:50","msg":"Обновление существующего хеша в таблице arrays","column":"result_first"}
+{"level":"info","ts":"2024-05-18T21:35:28.552+0300","caller":"logger/logger.go:54","msg":"Парсинг HTML-расписания","url":"https://menu.sttec.yar.ru/timetable/rasp_second.html"}
+{"level":"debug","ts":"2024-05-18T21:35:28.612+0300","caller":"logger/logger.go:50","msg":"Хеш совпадает, пропуск"}
+{"level":"info","ts":"2024-05-18T21:35:28.612+0300","caller":"logger/logger.go:54","msg":"Замены обновлены только у первой смены"}
+{"level":"info","ts":"2024-05-18T21:35:28.612+0300","caller":"logger/logger.go:54","msg":"Получение данных о пользователях, у которых включены PUSH-уведомления","idshift":1}
+{"level":"info","ts":"2024-05-18T21:35:28.616+0300","caller":"logger/logger.go:54","msg":"Получение групп по idshift","Тип знаменателя":1}
+{"level":"info","ts":"2024-05-18T21:35:34.514+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-18T21:35:34.522+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"20.05.2024","typeweek":2,"idweek":1}
+{"level":"info","ts":"2024-05-18T21:35:34.524+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":0,"classroom":"Б301","idweek":1}
+{"level":"debug","ts":"2024-05-18T21:35:34.524+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"08:00"}
+{"level":"info","ts":"2024-05-18T21:35:34.524+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б101","idweek":1}
+{"level":"debug","ts":"2024-05-18T21:35:34.524+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-18T21:35:34.524+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301","idweek":1}
+{"level":"debug","ts":"2024-05-18T21:35:34.524+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"debug","ts":"2024-05-18T21:35:34.524+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на понедельник, 20.05.2024 (Знаменатель):\n0 пара [Б301] (08:00) МДК 02.02/теория Пронина Л.Ю. (❗замена)\n1 пара [Б101] (09:20) Осн.проект.БД Гудкова А.Л. (❗замена)\n2 пара [Б301] (11:00) 1,2 п/гр. Гудкова А.Л. (❗замена)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-18T21:36:23.098+0300","caller":"logger/logger.go:54","msg":"Парсинг HTML-расписания","url":"https://menu.sttec.yar.ru/timetable/rasp_first.html"}
+{"level":"debug","ts":"2024-05-18T21:36:23.425+0300","caller":"logger/logger.go:50","msg":"Обновление существующего хеша в таблице arrays","column":"result_first"}
+{"level":"info","ts":"2024-05-18T21:36:23.590+0300","caller":"logger/logger.go:54","msg":"Парсинг HTML-расписания","url":"https://menu.sttec.yar.ru/timetable/rasp_second.html"}
+{"level":"debug","ts":"2024-05-18T21:36:23.662+0300","caller":"logger/logger.go:50","msg":"Хеш совпадает, пропуск"}
+{"level":"info","ts":"2024-05-18T21:36:23.662+0300","caller":"logger/logger.go:54","msg":"Замены обновлены только у первой смены"}
+{"level":"info","ts":"2024-05-18T21:36:23.662+0300","caller":"logger/logger.go:54","msg":"Получение данных о пользователях, у которых включены PUSH-уведомления","idshift":1}
+{"level":"info","ts":"2024-05-18T21:36:23.664+0300","caller":"logger/logger.go:54","msg":"Получение групп по idshift","Тип знаменателя":1}
+{"level":"info","ts":"2024-05-18T21:36:23.666+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-18T21:36:23.677+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"20.05.2024","typeweek":2,"idweek":1}
+{"level":"info","ts":"2024-05-18T21:36:23.679+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":0,"classroom":"Б301","idweek":1}
+{"level":"debug","ts":"2024-05-18T21:36:23.679+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"08:00"}
+{"level":"info","ts":"2024-05-18T21:36:23.679+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б101","idweek":1}
+{"level":"debug","ts":"2024-05-18T21:36:23.679+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-18T21:36:23.679+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301","idweek":1}
+{"level":"debug","ts":"2024-05-18T21:36:23.679+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"debug","ts":"2024-05-18T21:36:23.679+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на понедельник, 20.05.2024 (Знаменатель):\n0 пара [Б301] (08:00) МДК 02.02/теория Пронина Л.Ю. (❗замена)\n1 пара [Б101] (09:20) Осн.проект.БД Гудкова А.Л. (❗замена)\n2 пара [Б301] (11:00) 1,2 п/гр. Гудкова А.Л. (❗замена)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-18T21:36:23.679+0300","caller":"logger/logger.go:54","msg":"userid","userid":"1230045591","group":"4","schedule":"Расписание ИС1-21 на понедельник, 20.05.2024 (Знаменатель):\n0 пара [Б301] (08:00) МДК 02.02/теория Пронина Л.Ю. (❗замена)\n1 пара [Б101] (09:20) Осн.проект.БД Гудкова А.Л. (❗замена)\n2 пара [Б301] (11:00) 1,2 п/гр. Гудкова А.Л. (❗замена)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-18T21:36:29.905+0300","caller":"logger/logger.go:54","msg":"Парсинг HTML-расписания","url":"https://menu.sttec.yar.ru/timetable/rasp_first.html"}
+{"level":"debug","ts":"2024-05-18T21:36:30.243+0300","caller":"logger/logger.go:50","msg":"Хеш совпадает, пропуск"}
+{"level":"info","ts":"2024-05-18T21:36:30.243+0300","caller":"logger/logger.go:54","msg":"Парсинг HTML-расписания","url":"https://menu.sttec.yar.ru/timetable/rasp_second.html"}
+{"level":"debug","ts":"2024-05-18T21:36:30.307+0300","caller":"logger/logger.go:50","msg":"Хеш совпадает, пропуск"}
+{"level":"info","ts":"2024-05-18T21:36:43.933+0300","caller":"logger/logger.go:54","msg":"Обновление PUSH-уведомлений пользователя","push":true,"user_id":1230045591}
+{"level":"info","ts":"2024-05-18T21:36:47.017+0300","caller":"logger/logger.go:54","msg":"Получение данных пользователя","user_id":1230045591}
+{"level":"info","ts":"2024-05-18T21:36:49.186+0300","caller":"logger/logger.go:54","msg":"Обновление PUSH-уведомлений пользователя","push":false,"user_id":1230045591}
+{"level":"info","ts":"2024-05-18T21:36:50.975+0300","caller":"logger/logger.go:54","msg":"Получение данных пользователя","user_id":1230045591}
+{"level":"info","ts":"2024-05-18T21:36:58.686+0300","caller":"logger/logger.go:54","msg":"Получение данных о пользователях, у которых включены PUSH-уведомления","idshift":0}
+{"level":"info","ts":"2024-05-18T21:36:58.689+0300","caller":"logger/logger.go:54","msg":"Получение групп по idshift","Тип знаменателя":0}

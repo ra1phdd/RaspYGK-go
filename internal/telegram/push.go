@@ -12,7 +12,7 @@ import (
 )
 
 func SendToPush(idshift int) error {
-	data, err := services.GetUserPUSH(idshift, nil)
+	data, err := services.GetUserPUSH(idshift, false, nil)
 	if err != nil {
 		logger.Error("ошибка при получении пользователей с включенными PUSH в функции SendToPush: ", zap.Error(err))
 	}
@@ -61,7 +61,7 @@ func SendToAdmin(text string, userID int64, username string, idGroup int, role i
 }
 
 func SendToAll(text string) error {
-	data, err := services.GetUserPUSH(0, nil)
+	data, err := services.GetUserPUSH(0, true, nil)
 	if err != nil {
 		logger.Error("ошибка при получении пользователей с включенными PUSH в функции SendToPush: ", zap.Error(err))
 	}
