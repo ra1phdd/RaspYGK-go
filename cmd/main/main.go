@@ -22,24 +22,24 @@ func main() {
 	}()
 
 	// Подгрузка конфигурации
-	config, err := config.NewConfig()
+	configuration, err := config.NewConfig()
 	if err != nil {
 		log.Fatalf("%+v\n", err)
 	}
 
 	// Инициализация логгепа
-	logger.Init(config.LoggerLevel)
+	logger.Init(configuration.LoggerLevel)
 
 	// Подключение к БД
-	err = db.Init(config.DBUser, config.DBPassword, config.DBHost, config.DBName)
+	err = db.Init(configuration.DBUser, configuration.DBPassword, configuration.DBHost, configuration.DBName)
 	if err != nil {
 		logger.Fatal("Ошибка при подключении к БД", zap.Error(err))
 	}
 
 	// Инициализация кэша Redis
-	cache.Init(config.RedisAddr, config.RedisPort, config.RedisPassword)
+	cache.Init(configuration.RedisAddr, configuration.RedisPort, configuration.RedisPassword)
 
-	go telegram.Init(config.TelegramAPI)
+	go telegram.Init(configuration.TelegramAPI)
 
 	go metrics.Init()
 

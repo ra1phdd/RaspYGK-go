@@ -11,8 +11,8 @@ import (
 	tele "gopkg.in/telebot.v3"
 )
 
-func SendToPush(idshift int) error {
-	data, err := services.GetUserPUSH(idshift, nil)
+func SendToPush(idShift int) error {
+	data, err := services.GetUserPUSH(idShift, nil)
 	if err != nil {
 		logger.Error("ошибка при получении пользователей с включенными PUSH в функции SendToPush: ", zap.Error(err))
 	}
@@ -52,7 +52,17 @@ func SendToAdmin(text string, userID int64, username string, idGroup int, role i
 	}
 
 	chel := &tele.User{ID: 1230045591}
-	_, err = b.Send(chel, "Сообщение от пидораса с ID "+fmt.Sprint(userID)+" ("+fmt.Sprint(username)+") из группы "+group+": "+text)
+
+	var roleText string
+	if role == 1 {
+		roleText = "пидораса"
+	} else if role == 2 {
+		roleText = "преподавателя"
+	}
+
+	menu, btns := Keyboards(5, fmt.Sprint(userID))
+	buttons.ReplyAdmin = btns["ReplyAdmin"]
+	_, err = b.Send(chel, "Сообщение от "+roleText+" с ID "+fmt.Sprint(userID)+" ("+fmt.Sprint(username)+") из группы "+group+": "+text, menu)
 	if err != nil {
 		logger.Error("ошибка при отправке сообщения админу: ", zap.Error(err))
 	}

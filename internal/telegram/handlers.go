@@ -1,7 +1,6 @@
 package telegram
 
 import (
-	"fmt"
 	"raspygk/internal/models"
 	"raspygk/internal/services"
 	"raspygk/pkg/logger"
@@ -26,7 +25,7 @@ var SendUserIDMessage int64
 
 func HandlerBot() {
 	b.Use(func(next tele.HandlerFunc) tele.HandlerFunc {
-		return tele.HandlerFunc(func(c tele.Context) error {
+		return func(c tele.Context) error {
 			var err error
 			userState.ChatID = c.Chat().ID
 			userState.UserID = c.Sender().ID
@@ -38,19 +37,25 @@ func HandlerBot() {
 			}
 
 			if (userState.Role == 0 || userState.Group == 0) && c.Text() != "/start" && c.Callback() == nil {
-				c.Send("Чтобы начать пользоваться ботом, введите /start")
+				err := c.Send("Чтобы начать пользоваться ботом, введите /start")
+				if err != nil {
+					return err
+				}
 			}
 
 			return next(c)
-		})
+		}
 	})
 
 	b.Handle("/start", func(c tele.Context) error {
 		userStates[c.Sender().ID] = StateNone
 
-		menu, _ := Keyboards(0)
-		c.Send("Добро пожаловать! Это неофициальный бот для получения расписания в ЯГК.", menu)
-		fmt.Println(userState.Group, userState.Role)
+		menu, _ := Keyboards(0, "")
+		err := c.Send("Добро пожаловать! Это неофициальный бот для получения расписания в ЯГК.", menu)
+		if err != nil {
+			return err
+		}
+
 		if userState.Group == 0 && userState.Role == 0 {
 			err := services.AddUser(userState.UserID)
 			if err != nil {
@@ -58,21 +63,27 @@ func HandlerBot() {
 			}
 		}
 		if userState.Role == 0 {
-			menu, btns := Keyboards(2)
+			menu, btns := Keyboards(2, "")
 			for _, key := range models.RoleButtons {
 				button := btns[key.Value]
 				b.Handle(&button, createHandlerRole(models.TypeButtons, button.Text))
 			}
-			c.EditOrSend("Выберите роль:", menu)
+			err := c.EditOrSend("Выберите роль:", menu)
+			if err != nil {
+				return err
+			}
 			return nil
 		}
 		if userState.Group == 0 {
-			menu, btns := Keyboards(3)
+			menu, btns := Keyboards(3, "")
 			for _, key := range models.TypeButtons {
 				button := btns[key.Value]
 				b.Handle(&button, createHandlerType(button.Text))
 			}
-			c.EditOrSend("Выберите группу:", menu)
+			err := c.EditOrSend("Выберите группу:", menu)
+			if err != nil {
+				return err
+			}
 		}
 
 		return nil
@@ -85,7 +96,10 @@ func HandlerBot() {
 		if err != nil {
 			logger.Error("ошибка в функции getSchedule: ", zap.Error(err))
 		}
-		c.Send(schedule)
+		err = c.Send(schedule)
+		if err != nil {
+			return err
+		}
 
 		return nil
 	})
@@ -97,7 +111,10 @@ func HandlerBot() {
 		if err != nil {
 			logger.Error("ошибка в функции getPrevSchedule: ", zap.Error(err))
 		}
-		c.Send(schedule)
+		err = c.Send(schedule)
+		if err != nil {
+			return err
+		}
 
 		return nil
 	})
@@ -109,7 +126,10 @@ func HandlerBot() {
 		if err != nil {
 			logger.Error("ошибка в функции getNextSchedule: ", zap.Error(err))
 		}
-		c.Send(schedule)
+		err = c.Send(schedule)
+		if err != nil {
+			return err
+		}
 
 		return nil
 	})
@@ -117,30 +137,39 @@ func HandlerBot() {
 	b.Handle("Настройки", func(c tele.Context) error {
 		userStates[c.Sender().ID] = StateNone
 
-		menu, btns := Keyboards(1)
+		menu, btns := Keyboards(1, "")
 		buttons.Settings1 = btns["changeRole"]
 		buttons.Settings2 = btns["changeGroup"]
 		buttons.Settings3 = btns["changePUSH"]
-		c.Send("Выберите настройку:", menu)
+		err := c.Send("Выберите настройку:", menu)
+		if err != nil {
+			return err
+		}
 
 		b.Handle(&buttons.Settings1, func(c tele.Context) error {
-			menu, btns := Keyboards(2)
+			menu, btns := Keyboards(2, "")
 			for _, key := range models.RoleButtons {
 				button := btns[key.Value]
 				b.Handle(&button, createHandlerRole(nil, button.Text))
 			}
-			c.EditOrSend("Выберите роль:", menu)
+			err := c.EditOrSend("Выберите роль:", menu)
+			if err != nil {
+				return err
+			}
 
 			return nil
 		})
 
 		b.Handle(&buttons.Settings2, func(c tele.Context) error {
-			menu, btns := Keyboards(3)
+			menu, btns := Keyboards(3, "")
 			for _, key := range models.TypeButtons {
 				button := btns[key.Value]
 				b.Handle(&button, createHandlerType(button.Text))
 			}
-			c.EditOrSend("Выберите группу:", menu)
+			err := c.EditOrSend("Выберите группу:", menu)
+			if err != nil {
+				return err
+			}
 
 			return nil
 		})
@@ -160,7 +189,27 @@ func HandlerBot() {
 
 	b.Handle("Техподдержка", func(c tele.Context) error {
 		userStates[c.Sender().ID] = StateTextSupport
-		c.Send("Введите текст сообщения:")
+		err := c.Send("Введите текст сообщения:")
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	b.Handle(&buttons.ReplyAdmin, func(c tele.Context) error {
+		userStates[c.Sender().ID] = StateTextMessage
+
+		var err error
+		SendUserIDMessage, err = strconv.ParseInt(c.Data(), 10, 64)
+		if err != nil {
+			logger.Error("Ошибка преобразования userID в /message", zap.Error(err))
+		}
+
+		err = c.Send("Введи текст для пидораса")
+		if err != nil {
+			return err
+		}
 
 		return nil
 	})
@@ -172,7 +221,10 @@ func HandlerBot() {
 
 		userStates[c.Sender().ID] = StateGetIDMessage
 
-		c.Send("Введи userID пидораса")
+		err := c.Send("Введи userID пидораса")
+		if err != nil {
+			return err
+		}
 
 		return nil
 	})
@@ -184,7 +236,10 @@ func HandlerBot() {
 
 		userStates[c.Sender().ID] = StateAllMessage
 
-		c.Send("Введи текст для пидорасов")
+		err := c.Send("Введи текст для пидорасов")
+		if err != nil {
+			return err
+		}
 
 		return nil
 	})
@@ -201,7 +256,10 @@ func HandlerBot() {
 
 			userStates[c.Sender().ID] = StateNone
 
-			c.Send("Ваше обращение будет обязательно рассмотрено!")
+			err = c.Send("Ваше обращение будет обязательно рассмотрено!")
+			if err != nil {
+				return err
+			}
 		case StateGetIDMessage:
 			if userState.UserID != 1230045591 {
 				break
@@ -218,7 +276,10 @@ func HandlerBot() {
 
 			userStates[c.Sender().ID] = StateTextMessage
 
-			c.Send("Введи текст для пидораса")
+			err = c.Send("Введи текст для пидораса")
+			if err != nil {
+				return err
+			}
 		case StateTextMessage:
 			if userState.UserID != 1230045591 {
 				break
@@ -243,7 +304,10 @@ func HandlerBot() {
 		default:
 			userStates[c.Sender().ID] = StateNone
 
-			c.Send("Неизвестная команда")
+			err := c.Send("Неизвестная команда")
+			if err != nil {
+				return err
+			}
 		}
 
 		return nil
@@ -264,17 +328,26 @@ func createHandlerRole(typeButtons []models.ButtonOption, text string) func(c te
 		err := services.UpdateRole(role, userState.UserID)
 		if err != nil {
 			logger.Error("ошибка при обновлении роли в функции createHandlerRole: ", zap.Error(err))
-			c.EditOrSend("Произошла ошибка! Повторите попытку позже или обратитесь в техподдержку")
+			err := c.EditOrSend("Произошла ошибка! Повторите попытку позже или обратитесь в техподдержку")
+			if err != nil {
+				return err
+			}
 		}
 		if typeButtons != nil {
-			menu, btns := Keyboards(3)
+			menu, btns := Keyboards(3, "")
 			for _, key := range typeButtons {
 				button := btns[key.Value]
 				b.Handle(&button, createHandlerType(button.Text))
 			}
-			c.EditOrSend("Выберите группу:", menu)
+			err := c.EditOrSend("Выберите группу:", menu)
+			if err != nil {
+				return err
+			}
 		} else {
-			c.EditOrSend("Готово!")
+			err := c.EditOrSend("Готово!")
+			if err != nil {
+				return err
+			}
 		}
 
 		return nil
@@ -283,7 +356,7 @@ func createHandlerRole(typeButtons []models.ButtonOption, text string) func(c te
 
 func createHandlerType(text string) func(c tele.Context) error {
 	return func(c tele.Context) error {
-		menu, btns := Keyboards(4)
+		menu, btns := Keyboards(4, "")
 		var groupButtons []models.ButtonOption
 
 		switch text {
@@ -304,7 +377,10 @@ func createHandlerType(text string) func(c tele.Context) error {
 			b.Handle(&button, createHandlerGroup(button.Text))
 		}
 
-		c.EditOrSend("Выберите группу:", menu)
+		err := c.EditOrSend("Выберите группу:", menu)
+		if err != nil {
+			return err
+		}
 
 		return nil
 	}
@@ -314,10 +390,16 @@ func createHandlerGroup(text string) func(c tele.Context) error {
 	return func(c tele.Context) error {
 		err := services.UpdateGroup(text, userState.UserID)
 		if err != nil {
-			c.EditOrSend("Произошла ошибка! Повторите попытку позже или обратитесь в техподдержку")
+			err := c.EditOrSend("Произошла ошибка! Повторите попытку позже или обратитесь в техподдержку")
+			if err != nil {
+				return err
+			}
 			logger.Error("ошибка при обновлении группы в функции createHandlerGroup: ", zap.Error(err))
 		} else {
-			c.EditOrSend("Готово!")
+			err := c.EditOrSend("Готово!")
+			if err != nil {
+				return err
+			}
 		}
 		return nil
 	}
@@ -334,10 +416,16 @@ func createHandlerPUSH() func(c tele.Context) error {
 		}
 
 		if err != nil {
-			c.EditOrSend("Произошла ошибка! Повторите попытку позже или обратитесь в техподдержку")
+			err := c.EditOrSend("Произошла ошибка! Повторите попытку позже или обратитесь в техподдержку")
+			if err != nil {
+				return err
+			}
 			logger.Error("ошибка при обновлении статуса PUSH в функции createHandlerPUSH: ", zap.Error(err))
 		} else {
-			c.EditOrSend("Готово!")
+			err := c.EditOrSend("Готово!")
+			if err != nil {
+				return err
+			}
 		}
 
 		return nil

@@ -32,8 +32,8 @@ var WeekendTimeMap = map[int64]string{
 	5: "16:45",
 }
 
-func GetUserData(user_id int64) (int, int, bool, error) {
-	data, err := cache.Rdb.Get(cache.Ctx, "GetUserData_"+fmt.Sprint(user_id)).Result()
+func GetUserData(userId int64) (int, int, bool, error) {
+	data, err := cache.Rdb.Get(cache.Ctx, "GetUserData_"+fmt.Sprint(userId)).Result()
 	if err == nil && data != "" {
 		var result []interface{}
 		err = json.Unmarshal([]byte(data), &result)
@@ -51,7 +51,7 @@ func GetUserData(user_id int64) (int, int, bool, error) {
 	}
 
 	// Данных нет в Redis, получаем их из базы данных
-	rows, err := db.Conn.Queryx(`SELECT "group",role,push FROM users WHERE userid = $1`, user_id)
+	rows, err := db.Conn.Queryx(`SELECT "group",role,push FROM users WHERE userid = $1`, userId)
 	if err != nil {
 		logger.Error("ошибка при выборке данных из таблицы users в функции getUserData", zap.Error(err))
 		return 0, 0, false, err
@@ -76,18 +76,18 @@ func GetUserData(user_id int64) (int, int, bool, error) {
 		return int(group.Int32), int(role.Int32), push.Bool, err
 	}
 
-	err = cache.Rdb.Set(cache.Ctx, "GetUserData_"+fmt.Sprint(user_id), dataToStore, 1*time.Hour).Err()
+	err = cache.Rdb.Set(cache.Ctx, "GetUserData_"+fmt.Sprint(userId), dataToStore, 1*time.Hour).Err()
 	if err != nil {
 		return int(group.Int32), int(role.Int32), push.Bool, err
 	}
 
-	logger.Info("Получение данных пользователя", zap.Int64("user_id", user_id))
+	logger.Info("Получение данных пользователя", zap.Int64("user_id", userId))
 
 	return int(group.Int32), int(role.Int32), push.Bool, nil
 }
 
-func GetUserPUSH(idshift int, dataGroup []string) ([][]string, error) {
-	logger.Info("Получение данных о пользователях, у которых включены PUSH-уведомления", zap.Int("idshift", idshift))
+func GetUserPUSH(idShift int, dataGroup []string) ([][]string, error) {
+	logger.Info("Получение данных о пользователях, у которых включены PUSH-уведомления", zap.Int("idShift", idShift))
 
 	rows, err := db.Conn.Queryx(`SELECT userid, "group" FROM users`)
 	if err != nil {
@@ -109,11 +109,11 @@ func GetUserPUSH(idshift int, dataGroup []string) ([][]string, error) {
 	}
 
 	if dataGroup == nil {
-		logger.Info("Получение групп по idshift", zap.Int("Тип знаменателя", idshift))
-		if idshift == 0 {
+		logger.Info("Получение групп по idShift", zap.Int("Тип знаменателя", idShift))
+		if idShift == 0 {
 			rows, err = db.Conn.Queryx(`SELECT id FROM groups`)
 		} else {
-			rows, err = db.Conn.Queryx(`SELECT id FROM groups WHERE idshift = $1`, idshift)
+			rows, err = db.Conn.Queryx(`SELECT id FROM groups WHERE idshift = $1`, idShift)
 		}
 		if err != nil {
 			logger.Error("ошибка при выборке данных из таблицы groups в функции GetUserPUSH", zap.Error(err))
@@ -162,38 +162,38 @@ func GetUserPUSH(idshift int, dataGroup []string) ([][]string, error) {
 	return usersSlice, nil
 }
 
-func AddUser(user_id int64) error {
-	logger.Info("Добавление пользователя", zap.Int64("user_id", user_id))
+func AddUser(userId int64) error {
+	logger.Info("Добавление пользователя", zap.Int64("user_id", userId))
 
-	rows, err := db.Conn.Queryx(`INSERT INTO users (userid) VALUES ($1)`, user_id)
+	rows, err := db.Conn.Queryx(`INSERT INTO users (userid) VALUES ($1)`, userId)
 	if err != nil {
 		logger.Error("ошибка при добавлении пользователя в таблицу users", zap.Error(err))
 		return err
 	}
 	defer rows.Close()
 
-	cache.Rdb.Del(cache.Ctx, "GetUserData_"+fmt.Sprint(user_id))
+	cache.Rdb.Del(cache.Ctx, "GetUserData_"+fmt.Sprint(userId))
 
 	return nil
 }
 
-func UpdateRole(role int, user_id int64) error {
-	logger.Info("Обновление роли пользователя", zap.Int("role", role), zap.Int64("user_id", user_id))
+func UpdateRole(role int, userId int64) error {
+	logger.Info("Обновление роли пользователя", zap.Int("role", role), zap.Int64("user_id", userId))
 
-	rows, err := db.Conn.Queryx(`UPDATE users SET role = $1 WHERE userid = $2`, role, user_id)
+	rows, err := db.Conn.Queryx(`UPDATE users SET role = $1 WHERE userid = $2`, role, userId)
 	if err != nil {
 		logger.Error("ошибка при обновлении роли в таблице users", zap.Error(err))
 		return err
 	}
 	defer rows.Close()
 
-	cache.Rdb.Del(cache.Ctx, "GetUserData_"+fmt.Sprint(user_id))
+	cache.Rdb.Del(cache.Ctx, "GetUserData_"+fmt.Sprint(userId))
 
 	return nil
 }
 
-func UpdateGroup(group string, user_id int64) error {
-	logger.Info("Обновление группы пользователя", zap.String("group", group), zap.Int64("user_id", user_id))
+func UpdateGroup(group string, userId int64) error {
+	logger.Info("Обновление группы пользователя", zap.String("group", group), zap.Int64("user_id", userId))
 
 	var idGroup int
 	err := db.Conn.QueryRowx(`SELECT id FROM groups WHERE name = $1`, group).Scan(&idGroup)
@@ -202,28 +202,28 @@ func UpdateGroup(group string, user_id int64) error {
 		return err
 	}
 
-	_, err = db.Conn.Exec(`UPDATE users SET "group" = $1 WHERE userid = $2`, idGroup, user_id)
+	_, err = db.Conn.Exec(`UPDATE users SET "group" = $1 WHERE userid = $2`, idGroup, userId)
 	if err != nil {
 		logger.Error("ошибка при обновлении данных в таблице users в функции UpdateGroup", zap.Error(err))
 		return err
 	}
 
-	cache.Rdb.Del(cache.Ctx, "GetUserData_"+fmt.Sprint(user_id))
+	cache.Rdb.Del(cache.Ctx, "GetUserData_"+fmt.Sprint(userId))
 
 	return nil
 }
 
-func UpdatePUSH(push bool, user_id int64) error {
-	logger.Info("Обновление PUSH-уведомлений пользователя", zap.Bool("push", push), zap.Int64("user_id", user_id))
+func UpdatePUSH(push bool, userId int64) error {
+	logger.Info("Обновление PUSH-уведомлений пользователя", zap.Bool("push", push), zap.Int64("user_id", userId))
 
-	rows, err := db.Conn.Queryx(`UPDATE users SET push = $1 WHERE userid = $2`, push, user_id)
+	rows, err := db.Conn.Queryx(`UPDATE users SET push = $1 WHERE userid = $2`, push, userId)
 	if err != nil {
 		logger.Error("ошибка при обновлении данных в таблице users в функции UpdatePUSH", zap.Error(err))
 		return err
 	}
 	defer rows.Close()
 
-	cache.Rdb.Del(cache.Ctx, "GetUserData_"+fmt.Sprint(user_id))
+	cache.Rdb.Del(cache.Ctx, "GetUserData_"+fmt.Sprint(userId))
 
 	return nil
 }

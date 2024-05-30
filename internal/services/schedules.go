@@ -7,6 +7,7 @@ import (
 	"raspygk/pkg/db"
 	"raspygk/pkg/logger"
 	"strconv"
+	"strings"
 	"time"
 
 	"go.uber.org/zap"
@@ -20,7 +21,7 @@ func GetLessonTime(lesson int64, classroom string, idweek int) (string, error) {
 	}
 	code := []rune(classroom)[0]
 
-	var time string
+	var lessonTime string
 	var ok bool
 
 	isValidCode := code == 'А' || code == 'Б' || code == 'В' || code == 'М' || classroom == "ДОТ"
@@ -28,18 +29,13 @@ func GetLessonTime(lesson int64, classroom string, idweek int) (string, error) {
 	if isValidCode {
 		switch idweek {
 		case 1, 2, 3, 4, 5:
-			time, ok = WeekdayTimeMap[lesson]
+			lessonTime, ok = WeekdayTimeMap[lesson]
 			if !ok {
 				logger.Error("Время пары не найдено")
 				return "", nil
 			}
 		case 6:
-			time, ok = WeekendTimeMap[lesson]
-			if idweek >= 1 && idweek <= 5 {
-				time, ok = WeekdayTimeMap[lesson]
-			} else if idweek == 6 {
-				time, ok = WeekendTimeMap[lesson]
-			}
+			lessonTime, ok = WeekendTimeMap[lesson]
 			if !ok {
 				logger.Error("Время пары не найдено")
 				return "", nil
@@ -47,12 +43,12 @@ func GetLessonTime(lesson int64, classroom string, idweek int) (string, error) {
 		}
 	}
 
-	logger.Debug("Время занятия", zap.String("time", time))
-	return time, nil
+	logger.Debug("Время занятия", zap.String("time", lessonTime))
+	return lessonTime, nil
 }
 
-func GetTextSchedule(type_id int64, idGroup int, date string, typeweek int, idweek int, schedules []map[string]interface{}, replaces []map[string]interface{}) (string, error) {
-	logger.Info("Получение текста расписания", zap.Int64("type_id", type_id), zap.Int("group", idGroup), zap.String("date", date), zap.Int("typeweek", typeweek), zap.Int("idweek", idweek))
+func GetTextSchedule(typeId int64, idGroup int, date string, typeweek int, idweek int, schedules []map[string]interface{}, replaces []map[string]interface{}) (string, error) {
+	logger.Info("Получение текста расписания", zap.Int64("type_id", typeId), zap.Int("group", idGroup), zap.String("date", date), zap.Int("typeweek", typeweek), zap.Int("idweek", idweek))
 
 	daysOfWeek := []string{"", "понедельник", "вторник", "среду", "четверг", "пятницу", "субботу"}
 	if idweek < 1 || idweek > 6 {
@@ -68,21 +64,21 @@ func GetTextSchedule(type_id int64, idGroup int, date string, typeweek int, idwe
 		return "", err
 	}
 
-	var textweek string
+	var textWeek string
 	switch typeweek {
 	case 1:
-		textweek = "Числитель"
+		textWeek = "Числитель"
 	case 2:
-		textweek = "Знаменатель"
+		textWeek = "Знаменатель"
 	}
 
-	text := "Расписание " + group + " на " + week + ", " + date + " (" + textweek + "):\n"
+	text := "Расписание " + group + " на " + week + ", " + date + " (" + textWeek + "):\n"
 
 	for _, schedule := range schedules {
 		lesson := schedule["lesson"].(int64)
 		discipline := fmt.Sprint(schedule["discipline"])
 		teacher := fmt.Sprint(schedule["teacher"])
-		classroom_sched := fmt.Sprint(schedule["classroom"])
+		classroomSchedule := fmt.Sprint(schedule["classroom"])
 
 		if discipline == "<nil>" {
 			continue
@@ -90,27 +86,27 @@ func GetTextSchedule(type_id int64, idGroup int, date string, typeweek int, idwe
 
 		replaceDone := false
 		for _, replace := range replaces {
-			lesson_replace := replace["lesson"].(int64)
-			discipline_replace := fmt.Sprint(replace["discipline_replace"])
-			if discipline_replace == "по расписанию " || discipline_replace == "..." {
-				discipline_replace = discipline
+			lessonReplace := replace["lesson"].(int64)
+			disciplineReplace := fmt.Sprint(replace["discipline_replace"])
+			if disciplineReplace == "по расписанию " || disciplineReplace == "..." {
+				disciplineReplace = discipline
 			}
-			classroom_replace := fmt.Sprint(replace["classroom"])
+			classroomReplace := fmt.Sprint(replace["classroom"])
 
-			if lesson != lesson_replace {
+			if lesson != lessonReplace {
 				continue
 			}
 
-			time, err := GetLessonTime(lesson_replace, classroom_replace, idweek)
+			lessonTime, err := GetLessonTime(lessonReplace, classroomReplace, idweek)
 			if err != nil {
 				logger.Error("ошибка при вызове функции GetLessonTime, когда замена есть", zap.Error(err))
 				return "", nil
 			}
 
-			if discipline_replace != "снято" && discipline_replace != "Снято" {
-				text += strconv.FormatInt(lesson_replace, 10) + " пара [" + classroom_replace + "] (" + time + ") " + discipline_replace + " (❗замена)\n"
+			if strings.ToLower(strings.TrimSpace(disciplineReplace)) != "снято" {
+				text += strconv.FormatInt(lessonReplace, 10) + " пара [" + classroomReplace + "] (" + lessonTime + ") " + disciplineReplace + " (❗замена)\n"
 			} else {
-				text += strconv.FormatInt(lesson_replace, 10) + " пара - " + discipline_replace + " (❗замена)\n"
+				text += strconv.FormatInt(lessonReplace, 10) + " пара - снято (❗замена)\n"
 			}
 
 			replaceDone = true
@@ -121,18 +117,18 @@ func GetTextSchedule(type_id int64, idGroup int, date string, typeweek int, idwe
 			continue
 		}
 
-		time, err := GetLessonTime(lesson, classroom_sched, idweek)
+		lessonTime, err := GetLessonTime(lesson, classroomSchedule, idweek)
 		if err != nil {
 			logger.Error("ошибка при вызове функции GetLessonTime, когда замены нет", zap.Error(err))
 			return "", nil
 		}
 
-		text += strconv.FormatInt(lesson, 10) + " пара [" + classroom_sched + "] (" + time + ") " + discipline + " (" + teacher + ")\n"
+		text += strconv.FormatInt(lesson, 10) + " пара [" + classroomSchedule + "] (" + lessonTime + ") " + discipline + " (" + teacher + ")\n"
 	}
 
-	if type_id == 0 || type_id == 2 {
+	if typeId == 0 || typeId == 2 {
 		text += "\n✅ Замены обновлены"
-	} else if type_id == 1 {
+	} else if typeId == 1 {
 		text += "\n❌ Замены не обновлены"
 	}
 
@@ -164,6 +160,16 @@ func GetSchedule(group int) (string, error) {
 	text, err := GetTextSchedule(0, group, date.Format("02.01.2006"), typeweek, idweek, schedules, replaces)
 	if err != nil {
 		logger.Error("Ошибка при выполнении функции GetTextSchedule()", zap.Error(err))
+		return "", err
+	}
+
+	cacheText, err := cache.Rdb.Get(cache.Ctx, "GetTextSchedule_"+fmt.Sprint(group)).Result()
+	if err == nil && cacheText != "" {
+		return text, nil
+	}
+
+	err = cache.Rdb.Set(cache.Ctx, "GetTextSchedule_"+fmt.Sprint(group), text, 24*time.Hour).Err()
+	if err != nil {
 		return "", err
 	}
 
@@ -249,8 +255,8 @@ func GetPrevSchedule(group int) (string, error) {
 }
 
 func FetchLastWeekInfo() (int, int, time.Time, error) {
-	var idweek int
-	var typeweek int
+	var idWeek int
+	var typeWeek int
 	var date string
 	var dateForm time.Time
 	var err error
@@ -280,7 +286,7 @@ func FetchLastWeekInfo() (int, int, time.Time, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		err := rows.Scan(&idweek, &typeweek, &date)
+		err := rows.Scan(&idWeek, &typeWeek, &date)
 		if err != nil {
 			logger.Error("Ошибка при сканировании данных из таблицы arrays", zap.Error(err))
 			return 0, 0, time.Time{}, err
@@ -293,18 +299,18 @@ func FetchLastWeekInfo() (int, int, time.Time, error) {
 		}
 	}
 	// Сохраняем данные в Redis
-	dataToStore, err := json.Marshal([]interface{}{idweek, typeweek, dateForm})
+	dataToStore, err := json.Marshal([]interface{}{idWeek, typeWeek, dateForm})
 	if err != nil {
 		logger.Error("Ошибка при преобразовании данных для сохранения в Redis", zap.Error(err))
-		return idweek, typeweek, dateForm, err
+		return idWeek, typeWeek, dateForm, err
 	}
 
 	err = cache.Rdb.Set(cache.Ctx, "FetchLastWeekInfo", dataToStore, 1*time.Hour).Err()
 	if err != nil {
-		return idweek, typeweek, dateForm, err
+		return idWeek, typeWeek, dateForm, err
 	}
 
-	return idweek, typeweek, dateForm, nil
+	return idWeek, typeWeek, dateForm, nil
 }
 
 func FetchReplaces(group int, date time.Time) ([]map[string]interface{}, error) {

@@ -6,7 +6,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"raspygk/internal/telegram"
 	"raspygk/pkg/db"
 	"raspygk/pkg/logger"
@@ -19,8 +18,8 @@ import (
 )
 
 const (
-	URL_FIRST  = "https://menu.sttec.yar.ru/timetable/rasp_first.html"
-	URL_SECOND = "https://menu.sttec.yar.ru/timetable/rasp_second.html"
+	UrlFirst  = "https://menu.sttec.yar.ru/timetable/rasp_first.html"
+	UrlSecond = "https://menu.sttec.yar.ru/timetable/rasp_second.html"
 )
 
 var (
@@ -29,11 +28,11 @@ var (
 )
 
 func Init() error {
-	urls := []string{URL_FIRST, URL_SECOND}
+	urls := []string{UrlFirst, UrlSecond}
 	checks := make([]bool, len(urls))
 
 	for i, url := range urls {
-		date, idWeek, typeWeek, err := ParserData(url)
+		date, idWeek, typeWeek, err := HandleData(url)
 		if err != nil {
 			logger.Error("ошибка при обработке данных замен", zap.Error(err))
 			return err
@@ -47,21 +46,27 @@ func Init() error {
 		}
 	}
 
+	var idShift int
 	if checks[0] && !checks[1] {
 		logger.Info("Замены обновлены только у первой смены")
-		telegram.SendToPush(1)
+		idShift = 1
 	} else if !checks[0] && checks[1] {
 		logger.Info("Замены обновлены только у второй смены")
-		telegram.SendToPush(2)
+		idShift = 2
 	} else if checks[0] && checks[1] {
 		logger.Info("Замены обновлены у обоих смен")
-		telegram.SendToPush(0)
+		idShift = 0
+	}
+
+	err := telegram.SendToPush(idShift)
+	if err != nil {
+		return err
 	}
 
 	return nil
 }
 
-func ParserData(url string) (string, int, int, error) {
+func HandleData(url string) (string, int, int, error) {
 	logger.Info("Парсинг HTML-расписания", zap.String("url", url))
 
 	c := colly.NewCollector()
@@ -99,7 +104,7 @@ func ParserData(url string) (string, int, int, error) {
 
 	result := chunkArray(data, 6)
 
-	if url == URL_FIRST {
+	if url == UrlFirst {
 		dataFirst = DataProccessing(result)
 	} else {
 		dataSecond = DataProccessing(result)
@@ -244,19 +249,19 @@ func InsertData(date string, idWeek int, typeWeek int, idShift int) (bool, error
 	}
 	defer rows.Close()
 
-	var result_first, result_second sql.NullString
+	var resultFirst, resultSecond sql.NullString
 	var idArrays int
 
 	// Проверяем, есть ли результаты
 	if !rows.Next() {
-		query := fmt.Sprintf(`INSERT INTO hashes (%s, idweek, typeweek, date) VALUES ($1, $2, $3, $4) RETURNING id`, column)
+		query := "INSERT INTO hashes (" + column + ", idweek, typeweek, date) VALUES ($1, $2, $3, $4) RETURNING id"
 		err := db.Conn.QueryRow(query, column, idWeek, typeWeek, date).Scan(&idArrays)
 		if err != nil {
 			logger.Error("ошибка при обновлении1 к БД arrays", zap.Error(err))
 			return false, err
 		}
 	} else {
-		err := rows.Scan(&idArrays, &result_first, &result_second)
+		err := rows.Scan(&idArrays, &resultFirst, &resultSecond)
 		if err != nil {
 			logger.Error("ошибка при обработке данных из таблицы users в функции getUserData", zap.Error(err))
 			return false, err
@@ -264,9 +269,9 @@ func InsertData(date string, idWeek int, typeWeek int, idShift int) (bool, error
 	}
 
 	var query string
-	if (idShift == 1 && result_first.String != hashData) || (idShift == 2 && result_second.String != hashData) {
+	if (idShift == 1 && resultFirst.String != hashData) || (idShift == 2 && resultSecond.String != hashData) {
 		logger.Debug("Обновление существующего хеша в таблице arrays", zap.String("column", column))
-		query = fmt.Sprintf(`UPDATE hashes SET %s = $1, idweek = $2, typeweek = $3 WHERE date = $4 RETURNING id`, column)
+		query = "UPDATE hashes SET " + column + " = $1, idweek = $2, typeweek = $3 WHERE date = $4 RETURNING id"
 	} else {
 		logger.Debug("Хеш совпадает, пропуск")
 		return false, nil
@@ -277,7 +282,7 @@ func InsertData(date string, idWeek int, typeWeek int, idShift int) (bool, error
 		return false, err
 	}
 
-	if result_first.Valid || result_second.Valid {
+	if resultFirst.Valid || resultSecond.Valid {
 		_, err = db.Conn.Exec(`DELETE FROM replaces WHERE date = $1 AND "group" IN (SELECT id FROM groups WHERE idshift = $2)`, date, idShift)
 		if err != nil {
 			logger.Error("ошибка при удалении строки в БД arrays", zap.Error(err))

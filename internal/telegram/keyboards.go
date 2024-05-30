@@ -6,7 +6,7 @@ import (
 	tele "gopkg.in/telebot.v3"
 )
 
-func Keyboards(keyboard int) (*tele.ReplyMarkup, map[string]tele.Btn) {
+func Keyboards(keyboard int, data string) (*tele.ReplyMarkup, map[string]tele.Btn) {
 	menu := &tele.ReplyMarkup{ResizeKeyboard: true, IsPersistent: true}
 
 	switch keyboard {
@@ -81,6 +81,16 @@ func Keyboards(keyboard int) (*tele.ReplyMarkup, map[string]tele.Btn) {
 			menu.Row(btns["IS1_21"], btns["IS1_23"], btns["IS1_25"]),
 			menu.Row(btns["IS1_31"], btns["IS1_33"], btns["IS1_35"]),
 			menu.Row(btns["IS1_41"], btns["IS1_43"], btns["IS1_45"]),
+		)
+
+		return menu, btns
+
+	case 5:
+		btns := make(map[string]tele.Btn)
+		btns["replyAdmin"] = menu.Data("Ответить на сообщение", "replyAdmin", data)
+
+		menu.Inline(
+			menu.Row(btns["replyAdmin"]),
 		)
 
 		return menu, btns

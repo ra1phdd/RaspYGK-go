@@ -12,9 +12,10 @@ type UserState struct {
 }
 
 type Buttons struct {
-	Settings1 tele.Btn
-	Settings2 tele.Btn
-	Settings3 tele.Btn
+	Settings1  tele.Btn
+	Settings2  tele.Btn
+	Settings3  tele.Btn
+	ReplyAdmin tele.Btn
 }
 
 type ButtonOption struct {
