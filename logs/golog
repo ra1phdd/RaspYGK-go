@@ -11940,6 +11940,17 @@
 {"level":"info","ts":"2024-05-18T20:36:06.359+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301","idweek":1}
 {"level":"debug","ts":"2024-05-18T20:36:06.359+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
 {"level":"debug","ts":"2024-05-18T20:36:06.359+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на понедельник, 20.05.2024 (Знаменатель):\n0 пара [Б301] (08:00) МДК 02.02/теория Пронина Л.Ю. (❗замена)\n1 пара [Б101] (09:20) Осн.проект.БД Гудкова А.Л. (❗замена)\n2 пара [Б301] (11:00) 1,2 п/гр. Гудкова А.Л. (❗замена)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-30T22:27:10.120+0300","caller":"logger/logger.go:54","msg":"Получение данных пользователя","user_id":1230045591}
+{"level":"info","ts":"2024-05-30T22:27:10.120+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-30T22:27:10.133+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"31.05.2024","typeweek":1,"idweek":5}
+{"level":"info","ts":"2024-05-30T22:27:10.134+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":0,"classroom":"Б302Б305","idweek":5}
+{"level":"debug","ts":"2024-05-30T22:27:10.134+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"08:00"}
+{"level":"info","ts":"2024-05-30T22:27:10.134+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б305","idweek":5}
+{"level":"debug","ts":"2024-05-30T22:27:10.134+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-30T22:27:10.134+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б305","idweek":5}
+{"level":"debug","ts":"2024-05-30T22:27:10.134+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-30T22:27:10.134+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"","idweek":5}
+{"level":"debug","ts":"2024-05-30T22:27:10.135+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на пятницу, 31.05.2024 (Числитель):\n0 пара [Б302Б305] (08:00) Доп.проф. Юров А.А. Панасюк А.Д. (❗замена)\n1 пара [Б305] (09:20) МДК 06.03 Пронина Л.Ю.Байдина Ю.А (❗замена)\n2 пара [Б305] (11:00) МДК 06.03 Пронина Л.Ю.Байдина Ю.А (❗замена)\n3 пара [] () Снято  (❗замена)\n\n✅ Замены обновлены"}
 {"level":"info","ts":"2024-05-30T15:31:45.236+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
 {"level":"info","ts":"2024-05-30T15:31:45.711+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"31.05.2024","typeweek":1,"idweek":5}
 {"level":"info","ts":"2024-05-30T15:31:45.816+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":0,"classroom":"Б302Б305","idweek":5}
@@ -11990,3 +12001,43 @@
 {"level":"debug","ts":"2024-05-30T15:44:36.334+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
 {"level":"info","ts":"2024-05-30T15:44:36.334+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"","idweek":5}
 {"level":"debug","ts":"2024-05-30T15:44:36.334+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на пятницу, 31.05.2024 (Числитель):\n0 пара [Б302Б305] (08:00) Доп.проф. Юров А.А. Панасюк А.Д. (❗замена)\n1 пара [Б305] (09:20) МДК 06.03 Пронина Л.Ю.Байдина Ю.А (❗замена)\n2 пара [Б305] (11:00) МДК 06.03 Пронина Л.Ю.Байдина Ю.А (❗замена)\n3 пара - снято (❗замена)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-30T22:34:15.216+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-30T22:34:15.217+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"31.05.2024","typeweek":1,"idweek":5}
+{"level":"info","ts":"2024-05-30T22:34:15.222+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":0,"classroom":"Б302Б305","idweek":5}
+{"level":"debug","ts":"2024-05-30T22:34:15.222+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"08:00"}
+{"level":"info","ts":"2024-05-30T22:34:15.222+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б305","idweek":5}
+{"level":"debug","ts":"2024-05-30T22:34:15.222+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-30T22:34:15.222+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б305","idweek":5}
+{"level":"debug","ts":"2024-05-30T22:34:15.222+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-30T22:34:15.222+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"","idweek":5}
+{"level":"debug","ts":"2024-05-30T22:34:15.222+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на пятницу, 31.05.2024 (Числитель):\n0 пара [Б302Б305] (08:00) Доп.проф. Юров А.А. Панасюк А.Д. (❗замена)\n1 пара [Б305] (09:20) МДК 06.03 Пронина Л.Ю.Байдина Ю.А (❗замена)\n2 пара [Б305] (11:00) МДК 06.03 Пронина Л.Ю.Байдина Ю.А (❗замена)\n3 пара - снято (❗замена)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-30T22:34:53.571+0300","caller":"logger/logger.go:54","msg":"Получение данных пользователя","user_id":1087736725}
+{"level":"info","ts":"2024-05-30T22:34:53.571+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-30T22:34:53.572+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"31.05.2024","typeweek":1,"idweek":5}
+{"level":"info","ts":"2024-05-30T22:34:53.573+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":0,"classroom":"Б302Б305","idweek":5}
+{"level":"debug","ts":"2024-05-30T22:34:53.573+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"08:00"}
+{"level":"info","ts":"2024-05-30T22:34:53.573+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б305","idweek":5}
+{"level":"debug","ts":"2024-05-30T22:34:53.573+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-30T22:34:53.573+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б305","idweek":5}
+{"level":"debug","ts":"2024-05-30T22:34:53.573+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-30T22:34:53.573+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"","idweek":5}
+{"level":"debug","ts":"2024-05-30T22:34:53.573+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на пятницу, 31.05.2024 (Числитель):\n0 пара [Б302Б305] (08:00) Доп.проф. Юров А.А. Панасюк А.Д. (❗замена)\n1 пара [Б305] (09:20) МДК 06.03 Пронина Л.Ю.Байдина Ю.А (❗замена)\n2 пара [Б305] (11:00) МДК 06.03 Пронина Л.Ю.Байдина Ю.А (❗замена)\n3 пара - снято (❗замена)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-30T22:50:53.905+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-30T22:50:53.913+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"31.05.2024","typeweek":1,"idweek":5}
+{"level":"info","ts":"2024-05-30T22:50:53.915+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":0,"classroom":"Б302Б305","idweek":5}
+{"level":"debug","ts":"2024-05-30T22:50:53.915+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"08:00"}
+{"level":"info","ts":"2024-05-30T22:50:53.915+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б305","idweek":5}
+{"level":"debug","ts":"2024-05-30T22:50:53.915+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-30T22:50:53.915+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б305","idweek":5}
+{"level":"debug","ts":"2024-05-30T22:50:53.915+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-30T22:50:53.915+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"","idweek":5}
+{"level":"debug","ts":"2024-05-30T22:50:53.915+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на пятницу, 31.05.2024 (Числитель):\n0 пара [Б302Б305] (08:00) Доп.проф. Юров А.А. Панасюк А.Д. (❗замена)\n1 пара [Б305] (09:20) МДК 06.03 Пронина Л.Ю.Байдина Ю.А (❗замена)\n2 пара [Б305] (11:00) МДК 06.03 Пронина Л.Ю.Байдина Ю.А (❗замена)\n3 пара - снято (❗замена)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-30T22:50:57.085+0300","caller":"logger/logger.go:54","msg":"data","data":"1230045591"}
+{"level":"info","ts":"2024-05-30T22:51:28.268+0300","caller":"logger/logger.go:54","msg":"data","data":"1230045591"}
+{"level":"info","ts":"2024-05-30T22:51:50.744+0300","caller":"logger/logger.go:54","msg":"data","data":"1230045591"}
+{"level":"info","ts":"2024-05-30T23:07:33.414+0300","caller":"logger/logger.go:54","msg":"Парсинг HTML-расписания","url":"https://menu.sttec.yar.ru/timetable/rasp_first.html"}
+{"level":"debug","ts":"2024-05-30T23:07:33.494+0300","caller":"logger/logger.go:50","msg":"Обновление существующего хеша в таблице arrays","column":"result_first"}
+{"level":"error","ts":"2024-05-30T23:07:33.524+0300","caller":"logger/logger.go:62","msg":"Ошибка преобразования lesson в функции InsertData()","stacktrace":"raspygk/pkg/logger.Error\n\t/home/ra1ph/GolandProjects/RaspYGK-go/pkg/logger/logger.go:62\nraspygk/internal/parser.InsertData\n\t/home/ra1ph/GolandProjects/RaspYGK-go/internal/parser/parser.go:299\nraspygk/internal/parser.Init\n\t/home/ra1ph/GolandProjects/RaspYGK-go/internal/parser/parser.go:41\nmain.main\n\t/home/ra1ph/GolandProjects/RaspYGK-go/cmd/main/main.go:50\nruntime.main\n\t/usr/lib/go/src/runtime/proc.go:271"}
+{"level":"error","ts":"2024-05-30T23:07:33.529+0300","caller":"logger/logger.go:62","msg":"ошибка при вставке к БД arrays","error":"ERROR: null value in column \"group\" of relation \"replaces\" violates not-null constraint (SQLSTATE 23502)","stacktrace":"raspygk/pkg/logger.Error\n\t/home/ra1ph/GolandProjects/RaspYGK-go/pkg/logger/logger.go:62\nraspygk/internal/parser.InsertData\n\t/home/ra1ph/GolandProjects/RaspYGK-go/internal/parser/parser.go:304\nraspygk/internal/parser.Init\n\t/home/ra1ph/GolandProjects/RaspYGK-go/internal/parser/parser.go:41\nmain.main\n\t/home/ra1ph/GolandProjects/RaspYGK-go/cmd/main/main.go:50\nruntime.main\n\t/usr/lib/go/src/runtime/proc.go:271"}
+{"level":"error","ts":"2024-05-30T23:07:33.529+0300","caller":"logger/logger.go:62","msg":"ошибка при добавлении данных замен","error":"ERROR: null value in column \"group\" of relation \"replaces\" violates not-null constraint (SQLSTATE 23502)","stacktrace":"raspygk/pkg/logger.Error\n\t/home/ra1ph/GolandProjects/RaspYGK-go/pkg/logger/logger.go:62\nraspygk/internal/parser.Init\n\t/home/ra1ph/GolandProjects/RaspYGK-go/internal/parser/parser.go:43\nmain.main\n\t/home/ra1ph/GolandProjects/RaspYGK-go/cmd/main/main.go:50\nruntime.main\n\t/usr/lib/go/src/runtime/proc.go:271"}
+{"level":"fatal","ts":"2024-05-30T23:07:33.529+0300","caller":"logger/logger.go:66","msg":"Ошибка в работе парсера","error":"ERROR: null value in column \"group\" of relation \"replaces\" violates not-null constraint (SQLSTATE 23502)","stacktrace":"raspygk/pkg/logger.Fatal\n\t/home/ra1ph/GolandProjects/RaspYGK-go/pkg/logger/logger.go:66\nmain.main\n\t/home/ra1ph/GolandProjects/RaspYGK-go/cmd/main/main.go:52\nruntime.main\n\t/usr/lib/go/src/runtime/proc.go:271"}

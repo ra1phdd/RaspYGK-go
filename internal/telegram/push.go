@@ -61,7 +61,8 @@ func SendToAdmin(text string, userID int64, username string, idGroup int, role i
 	}
 
 	menu, btns := Keyboards(5, fmt.Sprint(userID))
-	buttons.ReplyAdmin = btns["ReplyAdmin"]
+	buttons.ReplyAdmin = btns["replyAdmin"]
+
 	_, err = b.Send(chel, "Сообщение от "+roleText+" с ID "+fmt.Sprint(userID)+" ("+fmt.Sprint(username)+") из группы "+group+": "+text, menu)
 	if err != nil {
 		logger.Error("ошибка при отправке сообщения админу: ", zap.Error(err))

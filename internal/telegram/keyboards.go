@@ -1,9 +1,9 @@
 package telegram
 
 import (
-	"raspygk/internal/models"
-
+	"fmt"
 	tele "gopkg.in/telebot.v3"
+	"raspygk/internal/models"
 )
 
 func Keyboards(keyboard int, data string) (*tele.ReplyMarkup, map[string]tele.Btn) {
@@ -88,6 +88,8 @@ func Keyboards(keyboard int, data string) (*tele.ReplyMarkup, map[string]tele.Bt
 	case 5:
 		btns := make(map[string]tele.Btn)
 		btns["replyAdmin"] = menu.Data("Ответить на сообщение", "replyAdmin", data)
+
+		fmt.Print(btns)
 
 		menu.Inline(
 			menu.Row(btns["replyAdmin"]),

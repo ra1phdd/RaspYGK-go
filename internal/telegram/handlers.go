@@ -1,6 +1,7 @@
 package telegram
 
 import (
+	"fmt"
 	"raspygk/internal/models"
 	"raspygk/internal/services"
 	"raspygk/pkg/logger"
@@ -30,6 +31,7 @@ func HandlerBot() {
 			userState.ChatID = c.Chat().ID
 			userState.UserID = c.Sender().ID
 			userState.Name = c.Sender().Username
+
 			userState.Group, userState.Role, userState.Push, err = services.GetUserData(userState.UserID)
 			if err != nil {
 				logger.Error("ошибка при получении данных пользователя: ", zap.Error(err))
@@ -197,8 +199,12 @@ func HandlerBot() {
 		return nil
 	})
 
+	fmt.Println(buttons.ReplyAdmin)
+
 	b.Handle(&buttons.ReplyAdmin, func(c tele.Context) error {
 		userStates[c.Sender().ID] = StateTextMessage
+
+		logger.Info("Обработчик кнопки вызван")
 
 		var err error
 		SendUserIDMessage, err = strconv.ParseInt(c.Data(), 10, 64)
