@@ -169,21 +169,21 @@ func DataProccessing(result [][]string) [][]string {
 	var data [][]string
 
 	for _, item := range result {
-		if item[2] == "" {
-			continue
-		}
-
 		item[3] = strings.Replace(item[3], "...", "по расписанию", -1)
 
-		values2 := strings.Split(item[2], ",")
-		values3 := strings.Split(item[3], ",")
-		values5 := strings.Split(item[5], ",")
+		values2 := strings.Split(item[2], ",") // Номер пары
+		values3 := strings.Split(item[3], ",") // Дисциплина по расписанию
+		values5 := strings.Split(item[5], ",") // Кабинет
 
 		for i := 0; i < len(values2); i++ {
 			newItem := make([]string, len(item))
 			copy(newItem, item)
 
 			newItem[2] = values2[i]
+			if newItem[2] != "" {
+				continue
+			}
+
 			if i < len(values3) {
 				newItem[3] = values3[i]
 			}
