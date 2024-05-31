@@ -199,7 +199,8 @@ func HandlerBot() {
 		return nil
 	})
 
-	fmt.Println(buttons.ReplyAdmin)
+	_, btns := Keyboards(5, fmt.Sprint(userState.UserID))
+	buttons.ReplyAdmin = btns["replyAdmin"]
 
 	b.Handle(&buttons.ReplyAdmin, func(c tele.Context) error {
 		userStates[c.Sender().ID] = StateTextMessage
