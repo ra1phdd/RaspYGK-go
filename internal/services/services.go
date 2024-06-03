@@ -227,3 +227,58 @@ func UpdatePUSH(push bool, userId int64) error {
 
 	return nil
 }
+
+func GetGroupID(group string) (int64, error) {
+	rows, err := db.Conn.Queryx(`SELECT id FROM groups WHERE name = $1`, group)
+	if err != nil {
+		logger.Error("ошибка при выборке данных из таблицы groups в функции GetGroupID", zap.Error(err))
+		return 0, err
+	}
+	defer rows.Close()
+
+	var groupID int64
+	for rows.Next() {
+		err := rows.Scan(&groupID)
+		if err != nil {
+			logger.Error("ошибка при обработке данных из таблицы groups в функции GetGroupID", zap.Error(err))
+			return 0, err
+		}
+	}
+
+	return groupID, nil
+}
+
+func EditByUserID(userId int64, text string) error {
+	data, err := cache.Rdb.Get(cache.Ctx, "GetIDEditText_"+fmt.Sprint(userId)).Result()
+	if err == nil && data != "" {
+		cache.Rdb.Del(cache.Ctx, "GetIDEditText_"+fmt.Sprint(userId))
+	}
+
+	err = cache.Rdb.Set(cache.Ctx, "GetIDEditText_"+fmt.Sprint(userId), text, 24*time.Hour).Err()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func EditByGroup(groupId int64, text string) error {
+	data, err := cache.Rdb.Get(cache.Ctx, "GetEditGroupText_"+fmt.Sprint(groupId)).Result()
+	if err == nil && data != "" {
+		cache.Rdb.Del(cache.Ctx, "GetEditGroupText_"+fmt.Sprint(groupId))
+	}
+
+	err = cache.Rdb.Set(cache.Ctx, "GetEditGroupText_"+fmt.Sprint(groupId), text, 24*time.Hour).Err()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func RemoveEditByUserID(userId int64) {
+	cache.Rdb.Del(cache.Ctx, "GetIDEditText_"+fmt.Sprint(userId))
+}
+func RemoveEditByGroup(groupId int64) {
+	cache.Rdb.Del(cache.Ctx, "GetEditGroupText_"+fmt.Sprint(groupId))
+}

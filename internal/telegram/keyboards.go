@@ -1,7 +1,6 @@
 package telegram
 
 import (
-	"fmt"
 	tele "gopkg.in/telebot.v3"
 	"raspygk/internal/models"
 )
@@ -89,10 +88,22 @@ func Keyboards(keyboard int, data string) (*tele.ReplyMarkup, map[string]tele.Bt
 		btns := make(map[string]tele.Btn)
 		btns["replyAdmin"] = menu.Data("Ответить на сообщение", "replyAdmin", data)
 
-		fmt.Print(btns)
-
 		menu.Inline(
 			menu.Row(btns["replyAdmin"]),
+		)
+
+		return menu, btns
+
+	case 6:
+		btns := make(map[string]tele.Btn)
+		btns["EditUserID"] = menu.Data("UserID", "EditUserID", data)
+		btns["EditGroup"] = menu.Data("Группа", "EditGroup", data)
+		btns["RemoveEditUserID"] = menu.Data("Откатить у UserID", "RemoveEditUserID", data)
+		btns["RemoveEditGroup"] = menu.Data("Откатить у группы", "RemoveEditGroup", data)
+
+		menu.Inline(
+			menu.Row(btns["EditUserID"], btns["EditGroup"]),
+			menu.Row(btns["RemoveEditUserID"], btns["RemoveEditGroup"]),
 		)
 
 		return menu, btns

@@ -23,7 +23,7 @@ func SendToPush(idShift int) error {
 			logger.Error("ошибка при преобразовании строки в int в функции createHandlerPUSH: ", zap.Error(err))
 		}
 
-		schedule, err := services.GetSchedule(groupID)
+		schedule, err := services.GetSchedule(groupID, 0)
 		if err != nil {
 			logger.Error("ошибка при получении расписания в функции createHandlerPUSH: ", zap.Error(err))
 		}

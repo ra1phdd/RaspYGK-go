@@ -19,10 +19,16 @@ const (
 	StateGetIDMessage
 	StateTextMessage
 	StateAllMessage
+	StateGetIDEdit
+	StateGetIDTextEdit
+	StateGetGroupTextEdit
+	StateGetGroupEdit
+	StateGetIDRemoveEdit
+	StateGetGroupRemoveEdit
 )
 
 var userStates = make(map[int64]State)
-var SendUserIDMessage int64
+var SendUserIDMessage, SendUserIDEdit, SendGroupIDEdit int64
 
 func HandlerBot() {
 	b.Use(func(next tele.HandlerFunc) tele.HandlerFunc {
@@ -94,7 +100,7 @@ func HandlerBot() {
 	b.Handle("Расписание", func(c tele.Context) error {
 		userStates[c.Sender().ID] = StateNone
 
-		schedule, err := services.GetSchedule(userState.Group)
+		schedule, err := services.GetSchedule(userState.Group, c.Sender().ID)
 		if err != nil {
 			logger.Error("ошибка в функции getSchedule: ", zap.Error(err))
 		}
@@ -202,6 +208,12 @@ func HandlerBot() {
 	_, btns := Keyboards(5, fmt.Sprint(userState.UserID))
 	buttons.ReplyAdmin = btns["replyAdmin"]
 
+	menu, btns := Keyboards(6, fmt.Sprint(userState.UserID))
+	buttons.EditUserID = btns["EditUserID"]
+	buttons.EditGroup = btns["EditGroup"]
+	buttons.RemoveEditUserID = btns["RemoveEditUserID"]
+	buttons.RemoveEditGroup = btns["RemoveEditGroup"]
+
 	b.Handle(&buttons.ReplyAdmin, func(c tele.Context) error {
 		userStates[c.Sender().ID] = StateTextMessage
 
@@ -244,6 +256,65 @@ func HandlerBot() {
 		userStates[c.Sender().ID] = StateAllMessage
 
 		err := c.Send("Введи текст для пидорасов")
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	b.Handle("/edit", func(c tele.Context) error {
+		if userState.UserID != 1230045591 {
+			return nil
+		}
+
+		userStates[c.Sender().ID] = StateGetIDEdit
+
+		err := c.Send("Выбери значение", menu)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	b.Handle(&buttons.EditUserID, func(c tele.Context) error {
+		userStates[c.Sender().ID] = StateGetIDEdit
+
+		err := c.Send("Введи UserID пидораса")
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	b.Handle(&buttons.EditGroup, func(c tele.Context) error {
+		userStates[c.Sender().ID] = StateGetGroupEdit
+
+		err := c.Send("Введи группу")
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	b.Handle(&buttons.RemoveEditUserID, func(c tele.Context) error {
+		userStates[c.Sender().ID] = StateGetIDRemoveEdit
+
+		err := c.Send("Введи UserID пидораса")
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	b.Handle(&buttons.RemoveEditGroup, func(c tele.Context) error {
+		userStates[c.Sender().ID] = StateGetGroupRemoveEdit
+
+		err := c.Send("Введи группу")
 		if err != nil {
 			return err
 		}
@@ -306,6 +377,85 @@ func HandlerBot() {
 			if err != nil {
 				logger.Error("ошибка при обработке HTTP-запроса в обработчике PUSH: ", zap.Error(err))
 			}
+
+			userStates[c.Sender().ID] = StateNone
+		case StateGetIDEdit:
+			if userState.UserID != 1230045591 {
+				break
+			}
+
+			var err error
+			SendUserIDEdit, err = strconv.ParseInt(c.Text(), 10, 64)
+			if err != nil {
+				logger.Error("Ошибка преобразования userID в /message", zap.Error(err))
+			}
+
+			err = c.Send("Введи текст расписания для пидораса")
+
+			userStates[c.Sender().ID] = StateGetIDTextEdit
+		case StateGetGroupEdit:
+			if userState.UserID != 1230045591 {
+				break
+			}
+
+			var err error
+			SendGroupIDEdit, err = services.GetGroupID(c.Text())
+			if err != nil {
+				return err
+			}
+
+			err = c.Send("Введи текст расписания для группы " + c.Text())
+			if err != nil {
+				return err
+			}
+
+			userStates[c.Sender().ID] = StateGetGroupTextEdit
+		case StateGetIDTextEdit:
+			if userState.UserID != 1230045591 {
+				break
+			}
+
+			err := services.EditByUserID(SendUserIDEdit, c.Text())
+
+			chel := &tele.User{ID: 1230045591}
+			_, err = b.Send(chel, "Расписание у пользователя с ID "+fmt.Sprint(SendUserIDEdit)+" изменено на:\n"+c.Text())
+			if err != nil {
+				logger.Error("ошибка при отправке сообщения админу: ", zap.Error(err))
+			}
+
+			userStates[c.Sender().ID] = StateNone
+		case StateGetGroupTextEdit:
+			if userState.UserID != 1230045591 {
+				break
+			}
+
+			err := services.EditByGroup(SendGroupIDEdit, c.Text())
+
+			chel := &tele.User{ID: 1230045591}
+			_, err = b.Send(chel, "Расписание у группы с ID "+fmt.Sprint(SendGroupIDEdit)+" изменено на:\n"+c.Text())
+			if err != nil {
+				logger.Error("ошибка при отправке сообщения админу: ", zap.Error(err))
+			}
+
+			userStates[c.Sender().ID] = StateNone
+		case StateGetIDRemoveEdit:
+			var err error
+			SendUserIDEdit, err = strconv.ParseInt(c.Text(), 10, 64)
+			if err != nil {
+				logger.Error("Ошибка преобразования userID в /message", zap.Error(err))
+			}
+
+			services.RemoveEditByUserID(SendUserIDEdit)
+
+			userStates[c.Sender().ID] = StateNone
+		case StateGetGroupRemoveEdit:
+			var err error
+			SendGroupIDEdit, err = services.GetGroupID(c.Text())
+			if err != nil {
+				return err
+			}
+
+			services.RemoveEditByGroup(SendGroupIDEdit)
 
 			userStates[c.Sender().ID] = StateNone
 		default:

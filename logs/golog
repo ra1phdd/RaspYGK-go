@@ -12042,3 +12042,346 @@
 {"level":"error","ts":"2024-05-30T23:07:33.529+0300","caller":"logger/logger.go:62","msg":"ошибка при добавлении данных замен","error":"ERROR: null value in column \"group\" of relation \"replaces\" violates not-null constraint (SQLSTATE 23502)","stacktrace":"raspygk/pkg/logger.Error\n\t/home/ra1ph/GolandProjects/RaspYGK-go/pkg/logger/logger.go:62\nraspygk/internal/parser.Init\n\t/home/ra1ph/GolandProjects/RaspYGK-go/internal/parser/parser.go:43\nmain.main\n\t/home/ra1ph/GolandProjects/RaspYGK-go/cmd/main/main.go:50\nruntime.main\n\t/usr/lib/go/src/runtime/proc.go:271"}
 {"level":"fatal","ts":"2024-05-30T23:07:33.529+0300","caller":"logger/logger.go:66","msg":"Ошибка в работе парсера","error":"ERROR: null value in column \"group\" of relation \"replaces\" violates not-null constraint (SQLSTATE 23502)","stacktrace":"raspygk/pkg/logger.Fatal\n\t/home/ra1ph/GolandProjects/RaspYGK-go/pkg/logger/logger.go:66\nmain.main\n\t/home/ra1ph/GolandProjects/RaspYGK-go/cmd/main/main.go:52\nruntime.main\n\t/usr/lib/go/src/runtime/proc.go:271"}
 {"level":"info","ts":"2024-05-31T11:01:01.862+0300","caller":"logger/logger.go:54","msg":"Обработчик кнопки вызван"}
+{"level":"info","ts":"2024-05-31T11:42:59.683+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T11:42:59.729+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"31.05.2024","typeweek":1,"idweek":5}
+{"level":"info","ts":"2024-05-31T11:42:59.783+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":0,"classroom":"Б302Б305","idweek":5}
+{"level":"debug","ts":"2024-05-31T11:42:59.783+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"08:00"}
+{"level":"info","ts":"2024-05-31T11:42:59.783+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б305","idweek":5}
+{"level":"debug","ts":"2024-05-31T11:42:59.783+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T11:42:59.783+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б305","idweek":5}
+{"level":"debug","ts":"2024-05-31T11:42:59.783+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T11:42:59.784+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"","idweek":5}
+{"level":"debug","ts":"2024-05-31T11:42:59.784+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на пятницу, 31.05.2024 (Числитель):\n0 пара [Б302Б305] (08:00) Доп.проф. Юров А.А. Панасюк А.Д. (❗замена)\n1 пара [Б305] (09:20) МДК 06.03 Пронина Л.Ю.Байдина Ю.А (❗замена)\n2 пара [Б305] (11:00) МДК 06.03 Пронина Л.Ю.Байдина Ю.А (❗замена)\n3 пара - снято (❗замена)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T11:43:05.640+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T11:43:05.686+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"31.05.2024","typeweek":1,"idweek":5}
+{"level":"info","ts":"2024-05-31T11:43:05.721+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":0,"classroom":"Б302Б305","idweek":5}
+{"level":"debug","ts":"2024-05-31T11:43:05.722+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"08:00"}
+{"level":"info","ts":"2024-05-31T11:43:05.722+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б305","idweek":5}
+{"level":"debug","ts":"2024-05-31T11:43:05.722+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T11:43:05.722+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б305","idweek":5}
+{"level":"debug","ts":"2024-05-31T11:43:05.722+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T11:43:05.722+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"","idweek":5}
+{"level":"debug","ts":"2024-05-31T11:43:05.722+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на пятницу, 31.05.2024 (Числитель):\n0 пара [Б302Б305] (08:00) Доп.проф. Юров А.А. Панасюк А.Д. (❗замена)\n1 пара [Б305] (09:20) МДК 06.03 Пронина Л.Ю.Байдина Ю.А (❗замена)\n2 пара [Б305] (11:00) МДК 06.03 Пронина Л.Ю.Байдина Ю.А (❗замена)\n3 пара - снято (❗замена)\n\n✅ Замены обновлены"}
+{"level":"error","ts":"2024-05-31T11:44:48.972+0300","caller":"logger/logger.go:62","msg":"Ошибка преобразования userID в /message","error":"strconv.ParseInt: parsing \"\": invalid syntax","stacktrace":"raspygk/pkg/logger.Error\n\t/home/ra1ph/GolandProjects/RaspYGK-go/pkg/logger/logger.go:62\nraspygk/internal/telegram.HandlerBot.func13\n\t/home/ra1ph/GolandProjects/RaspYGK-go/internal/telegram/handlers.go:351\nraspygk/internal/telegram.HandlerBot.func1.1\n\t/home/ra1ph/GolandProjects/RaspYGK-go/internal/telegram/handlers.go:50\ngopkg.in/telebot%2ev3.(*Bot).Handle.func1\n\t/home/ra1ph/go/pkg/mod/gopkg.in/telebot.v3@v3.2.1/bot.go:180\ngopkg.in/telebot%2ev3.(*Bot).runHandler.func1\n\t/home/ra1ph/go/pkg/mod/gopkg.in/telebot.v3@v3.2.1/update.go:357"}
+{"level":"info","ts":"2024-05-31T11:46:01.283+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T11:46:01.344+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"31.05.2024","typeweek":1,"idweek":5}
+{"level":"info","ts":"2024-05-31T11:46:01.401+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":0,"classroom":"Б302Б305","idweek":5}
+{"level":"debug","ts":"2024-05-31T11:46:01.401+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"08:00"}
+{"level":"info","ts":"2024-05-31T11:46:01.401+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б305","idweek":5}
+{"level":"debug","ts":"2024-05-31T11:46:01.401+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T11:46:01.401+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б305","idweek":5}
+{"level":"debug","ts":"2024-05-31T11:46:01.401+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T11:46:01.401+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"","idweek":5}
+{"level":"debug","ts":"2024-05-31T11:46:01.401+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на пятницу, 31.05.2024 (Числитель):\n0 пара [Б302Б305] (08:00) Доп.проф. Юров А.А. Панасюк А.Д. (❗замена)\n1 пара [Б305] (09:20) МДК 06.03 Пронина Л.Ю.Байдина Ю.А (❗замена)\n2 пара [Б305] (11:00) МДК 06.03 Пронина Л.Ю.Байдина Ю.А (❗замена)\n3 пара - снято (❗замена)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T11:46:07.617+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T11:46:07.677+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"31.05.2024","typeweek":1,"idweek":5}
+{"level":"info","ts":"2024-05-31T11:46:07.713+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":0,"classroom":"Б302Б305","idweek":5}
+{"level":"debug","ts":"2024-05-31T11:46:07.713+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"08:00"}
+{"level":"info","ts":"2024-05-31T11:46:07.713+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б305","idweek":5}
+{"level":"debug","ts":"2024-05-31T11:46:07.713+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T11:46:07.713+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б305","idweek":5}
+{"level":"debug","ts":"2024-05-31T11:46:07.713+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T11:46:07.713+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"","idweek":5}
+{"level":"debug","ts":"2024-05-31T11:46:07.713+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на пятницу, 31.05.2024 (Числитель):\n0 пара [Б302Б305] (08:00) Доп.проф. Юров А.А. Панасюк А.Д. (❗замена)\n1 пара [Б305] (09:20) МДК 06.03 Пронина Л.Ю.Байдина Ю.А (❗замена)\n2 пара [Б305] (11:00) МДК 06.03 Пронина Л.Ю.Байдина Ю.А (❗замена)\n3 пара - снято (❗замена)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T11:46:08.723+0300","caller":"logger/logger.go:54","msg":"Получение расписания на следующий день","group":4}
+{"level":"info","ts":"2024-05-31T11:46:08.762+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":1,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T11:46:08.798+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"debug","ts":"2024-05-31T11:46:08.798+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T11:46:08.798+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T11:46:08.798+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T11:46:08.798+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T11:46:08.798+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T11:46:08.798+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n❌ Замены не обновлены"}
+{"level":"info","ts":"2024-05-31T11:48:18.046+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T11:48:18.118+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"31.05.2024","typeweek":1,"idweek":5}
+{"level":"info","ts":"2024-05-31T11:48:18.187+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":0,"classroom":"Б302Б305","idweek":5}
+{"level":"debug","ts":"2024-05-31T11:48:18.187+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"08:00"}
+{"level":"info","ts":"2024-05-31T11:48:18.187+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б305","idweek":5}
+{"level":"debug","ts":"2024-05-31T11:48:18.187+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T11:48:18.187+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б305","idweek":5}
+{"level":"debug","ts":"2024-05-31T11:48:18.187+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T11:48:18.187+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"","idweek":5}
+{"level":"debug","ts":"2024-05-31T11:48:18.187+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на пятницу, 31.05.2024 (Числитель):\n0 пара [Б302Б305] (08:00) Доп.проф. Юров А.А. Панасюк А.Д. (❗замена)\n1 пара [Б305] (09:20) МДК 06.03 Пронина Л.Ю.Байдина Ю.А (❗замена)\n2 пара [Б305] (11:00) МДК 06.03 Пронина Л.Ю.Байдина Ю.А (❗замена)\n3 пара - снято (❗замена)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T11:48:52.672+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T11:48:52.678+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T11:48:52.710+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T11:48:52.713+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T11:48:52.747+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T11:48:52.769+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T11:48:52.774+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T11:48:52.795+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T11:48:52.810+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T11:48:52.835+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T11:48:52.873+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T11:49:56.251+0300","caller":"logger/logger.go:54","msg":"Получение данных пользователя","user_id":1087736725}
+{"level":"info","ts":"2024-05-31T11:49:56.251+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T11:50:35.035+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T11:50:35.105+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"31.05.2024","typeweek":1,"idweek":5}
+{"level":"info","ts":"2024-05-31T11:50:35.152+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":0,"classroom":"Б302Б305","idweek":5}
+{"level":"debug","ts":"2024-05-31T11:50:35.152+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"08:00"}
+{"level":"info","ts":"2024-05-31T11:50:35.152+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б305","idweek":5}
+{"level":"debug","ts":"2024-05-31T11:50:35.152+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T11:50:35.152+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б305","idweek":5}
+{"level":"debug","ts":"2024-05-31T11:50:35.152+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T11:50:35.152+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"","idweek":5}
+{"level":"debug","ts":"2024-05-31T11:50:35.152+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на пятницу, 31.05.2024 (Числитель):\n0 пара [Б302Б305] (08:00) Доп.проф. Юров А.А. Панасюк А.Д. (❗замена)\n1 пара [Б305] (09:20) МДК 06.03 Пронина Л.Ю.Байдина Ю.А (❗замена)\n2 пара [Б305] (11:00) МДК 06.03 Пронина Л.Ю.Байдина Ю.А (❗замена)\n3 пара - снято (❗замена)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T12:03:52.312+0300","caller":"logger/logger.go:54","msg":"Парсинг HTML-расписания","url":"https://menu.sttec.yar.ru/timetable/rasp_first.html"}
+{"level":"debug","ts":"2024-05-31T12:03:54.749+0300","caller":"logger/logger.go:50","msg":"Хеш совпадает, пропуск"}
+{"level":"info","ts":"2024-05-31T12:03:54.749+0300","caller":"logger/logger.go:54","msg":"Парсинг HTML-расписания","url":"https://menu.sttec.yar.ru/timetable/rasp_second.html"}
+{"level":"debug","ts":"2024-05-31T12:03:55.925+0300","caller":"logger/logger.go:50","msg":"Хеш совпадает, пропуск"}
+{"level":"info","ts":"2024-05-31T12:03:55.925+0300","caller":"logger/logger.go:54","msg":"Получение данных о пользователях, у которых включены PUSH-уведомления","idShift":0}
+{"level":"info","ts":"2024-05-31T12:04:00.655+0300","caller":"logger/logger.go:54","msg":"Получение групп по idShift","Тип знаменателя":0}
+{"level":"error","ts":"2024-05-31T12:04:00.878+0300","caller":"logger/logger.go:62","msg":"Перехваченная паника","panic":"interface conversion: interface {} is nil, not int64","stacktrace":"raspygk/pkg/logger.Error\n\t/home/ra1ph/GolandProjects/RaspYGK-go/pkg/logger/logger.go:62\nmain.main.func1\n\t/home/ra1ph/GolandProjects/RaspYGK-go/cmd/main/main.go:20\nruntime.gopanic\n\t/usr/lib/go/src/runtime/panic.go:770\nruntime.panicdottypeE\n\t/usr/lib/go/src/runtime/iface.go:262\nraspygk/internal/services.GetUserPUSH\n\t/home/ra1ph/GolandProjects/RaspYGK-go/internal/services/services.go:147\nraspygk/internal/telegram.SendToPush\n\t/home/ra1ph/GolandProjects/RaspYGK-go/internal/telegram/push.go:15\nraspygk/internal/parser.Init\n\t/home/ra1ph/GolandProjects/RaspYGK-go/internal/parser/parser.go:61\nmain.main\n\t/home/ra1ph/GolandProjects/RaspYGK-go/cmd/main/main.go:50\nruntime.main\n\t/usr/lib/go/src/runtime/proc.go:271"}
+{"level":"info","ts":"2024-05-31T12:07:22.372+0300","caller":"logger/logger.go:54","msg":"Получение данных пользователя","user_id":1230045591}
+{"level":"info","ts":"2024-05-31T12:07:22.372+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:07:22.595+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T12:07:22.624+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:07:22.624+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:07:22.624+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:07:22.624+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:07:22.624+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:07:22.624+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:07:22.625+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T12:08:08.827+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:08:32.531+0300","caller":"logger/logger.go:54","msg":"Получение данных пользователя","user_id":1020705268}
+{"level":"info","ts":"2024-05-31T12:08:32.531+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:14:16.154+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:14:24.205+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:14:46.889+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:14:57.485+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:14:57.780+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T12:14:57.935+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:14:57.935+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:14:57.935+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:14:57.935+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:14:57.935+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:14:57.935+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:14:57.935+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T12:15:08.715+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:15:09.903+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T12:15:11.631+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:11.632+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:15:11.632+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:11.632+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:15:11.632+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:11.632+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:15:11.632+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"error","ts":"2024-05-31T12:15:14.770+0300","caller":"logger/logger.go:62","msg":"ошибка в функции getSchedule: ","error":"dial tcp 91.215.21.236:6379: connect: network is unreachable","stacktrace":"raspygk/pkg/logger.Error\n\t/home/ra1ph/GolandProjects/RaspYGK-go/pkg/logger/logger.go:62\nraspygk/internal/telegram.HandlerBot.func3\n\t/home/ra1ph/GolandProjects/RaspYGK-go/internal/telegram/handlers.go:105\nraspygk/internal/telegram.HandlerBot.func1.1\n\t/home/ra1ph/GolandProjects/RaspYGK-go/internal/telegram/handlers.go:54\ngopkg.in/telebot%2ev3.(*Bot).Handle.func1\n\t/home/ra1ph/go/pkg/mod/gopkg.in/telebot.v3@v3.2.1/bot.go:180\ngopkg.in/telebot%2ev3.(*Bot).runHandler.func1\n\t/home/ra1ph/go/pkg/mod/gopkg.in/telebot.v3@v3.2.1/update.go:357"}
+{"level":"info","ts":"2024-05-31T12:15:28.635+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:15:28.650+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:15:28.830+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:15:28.834+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:15:29.074+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T12:15:29.104+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:15:29.104+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T12:15:29.117+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:15:29.250+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:15:29.250+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.250+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:15:29.250+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.250+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:15:29.250+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.250+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:15:29.250+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T12:15:29.272+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:15:29.272+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T12:15:29.565+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"info","ts":"2024-05-31T12:15:29.565+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:15:29.565+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:15:29.565+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.565+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:15:29.565+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.565+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:15:29.565+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.565+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:15:29.565+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T12:15:29.601+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"info","ts":"2024-05-31T12:15:29.601+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"debug","ts":"2024-05-31T12:15:29.601+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:15:29.601+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.601+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:15:29.601+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.601+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:15:29.601+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T12:15:29.620+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T12:15:29.620+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T12:15:29.638+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:15:29.644+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:15:29.644+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.644+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:15:29.644+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.644+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:15:29.644+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.644+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:15:29.644+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T12:15:29.657+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T12:15:29.659+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T12:15:29.660+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T12:15:29.675+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:15:29.675+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.675+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:15:29.675+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.675+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:15:29.675+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.675+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:15:29.675+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T12:15:29.676+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.677+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:15:29.677+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.677+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:15:29.677+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.677+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:15:29.677+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T12:15:29.679+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T12:15:29.686+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:15:29.703+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.703+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:15:29.703+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.703+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:15:29.703+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.703+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:15:29.703+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T12:15:29.727+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T12:15:29.735+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T12:15:29.736+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T12:15:29.752+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.752+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:15:29.752+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.752+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:15:29.752+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.752+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:15:29.752+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T12:15:29.758+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T12:15:29.767+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.767+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:15:29.767+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.767+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:15:29.767+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.767+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:15:29.767+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T12:15:29.772+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T12:15:29.777+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.777+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:15:29.777+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.777+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:15:29.777+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.777+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:15:29.777+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T12:15:29.790+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.790+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:15:29.790+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.790+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:15:29.790+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.790+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:15:29.790+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T12:15:29.817+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.817+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:15:29.817+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.817+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:15:29.817+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.817+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:15:29.817+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T12:15:29.829+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.829+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:15:29.829+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.829+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:15:29.829+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.829+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:15:29.829+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T12:15:29.893+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.893+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:15:29.893+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.893+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:15:29.893+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.893+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:15:29.893+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T12:15:29.902+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.902+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:15:29.902+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.902+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:15:29.902+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:29.902+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:15:29.902+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T12:15:44.966+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:15:45.376+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T12:15:45.413+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:45.413+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:15:45.414+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:45.414+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:15:45.414+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:45.414+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:15:45.414+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T12:15:46.663+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:15:46.737+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T12:15:46.775+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:46.775+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:15:46.775+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:46.775+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:15:46.775+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:46.775+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:15:46.775+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T12:15:53.843+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:15:54.147+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T12:15:54.296+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:54.296+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:15:54.296+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:54.296+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:15:54.296+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:15:54.296+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:15:54.296+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T12:16:58.974+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:16:59.150+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T12:16:59.259+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:16:59.259+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:16:59.259+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:16:59.259+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:16:59.259+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:16:59.259+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:16:59.259+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T12:17:08.483+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:17:33.078+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:17:33.284+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T12:17:49.568+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:17:49.568+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:17:49.568+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:17:49.568+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:17:49.568+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:17:49.568+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:17:49.568+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T12:17:54.200+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:17:54.252+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:17:54.276+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T12:17:54.279+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:17:54.313+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:17:54.313+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:17:54.313+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:17:54.313+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:17:54.313+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:17:54.313+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:17:54.313+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T12:17:54.335+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T12:17:54.354+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:17:54.354+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:17:54.354+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:17:54.354+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:17:54.354+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:17:54.354+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:17:54.354+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T12:17:54.371+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T12:17:54.389+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:17:54.390+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:17:54.390+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:17:54.390+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:17:54.390+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:17:54.390+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:17:54.390+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"info","ts":"2024-05-31T12:17:54.907+0300","caller":"logger/logger.go:54","msg":"Получение расписания","group":4}
+{"level":"info","ts":"2024-05-31T12:17:55.001+0300","caller":"logger/logger.go:54","msg":"Получение текста расписания","type_id":0,"group":4,"date":"01.06.2024","typeweek":1,"idweek":6}
+{"level":"info","ts":"2024-05-31T12:17:55.024+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":1,"classroom":"Б308 Б301","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:17:55.024+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"09:20"}
+{"level":"info","ts":"2024-05-31T12:17:55.024+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":2,"classroom":"Б301 Б302","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:17:55.024+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"11:00"}
+{"level":"info","ts":"2024-05-31T12:17:55.024+0300","caller":"logger/logger.go:54","msg":"Получение времени занятия","lesson":3,"classroom":"Б204 Б305","idweek":6}
+{"level":"debug","ts":"2024-05-31T12:17:55.024+0300","caller":"logger/logger.go:50","msg":"Время занятия","time":"13:20"}
+{"level":"debug","ts":"2024-05-31T12:17:55.024+0300","caller":"logger/logger.go:50","msg":"Текст расписания","text":"Расписание ИС1-21 на субботу, 01.06.2024 (Числитель):\n1 пара [Б308 Б301] (09:20) МДК 06.02 Инженерно-техническая поддержка сопровождения ИС (Юров А.А. Пигалов М.А.)\n2 пара [Б301 Б302] (11:00) Основы алгоритмизации и программирования (Королева П.Д. Неделяева Н.А.)\n3 пара [Б204 Б305] (13:20) * Дополнительная профессия (Юров А.А. Панасюк А.Д.)\n\n✅ Замены обновлены"}
+{"level":"fatal","ts":"2024-05-31T12:19:36.891+0300","caller":"logger/logger.go:66","msg":"Ошибка при подключении к БД","error":"failed to connect to `host=91.215.21.236 user=postgres database=raspygk_db`: dial error (dial tcp 91.215.21.236:5432: connect: network is unreachable)","stacktrace":"raspygk/pkg/logger.Fatal\n\t/home/ra1ph/GolandProjects/RaspYGK-go/pkg/logger/logger.go:66\nmain.main\n\t/home/ra1ph/GolandProjects/RaspYGK-go/cmd/main/main.go:36\nruntime.main\n\t/usr/lib/go/src/runtime/proc.go:271"}

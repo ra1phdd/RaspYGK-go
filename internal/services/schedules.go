@@ -136,7 +136,7 @@ func GetTextSchedule(typeId int64, idGroup int, date string, typeweek int, idwee
 	return text, nil
 }
 
-func GetSchedule(group int) (string, error) {
+func GetSchedule(group int, userId int64) (string, error) {
 	logger.Info("Получение расписания", zap.Int("group", group))
 
 	idweek, typeweek, date, err := FetchLastWeekInfo()
@@ -157,17 +157,45 @@ func GetSchedule(group int) (string, error) {
 		return "", err
 	}
 
-	text, err := GetTextSchedule(0, group, date.Format("02.01.2006"), typeweek, idweek, schedules, replaces)
+	var text, cacheText string
+
+	// Функция для получения текста из кэша
+	getTextFromCache := func(key string) (string, error) {
+		text, err := cache.Rdb.Get(cache.Ctx, key).Result()
+		if err == nil && text != "" {
+			return text, nil
+		}
+		return "", err
+	}
+
+	// Попытка получить текст по userId, если userId не равен 0
+	if userId != 0 {
+		text, err := getTextFromCache("GetIDEditText_" + fmt.Sprint(userId))
+		if err == nil {
+			return text, nil
+		}
+	}
+
+	// Попытка получить текст по group
+	text, err = getTextFromCache("GetEditGroupText_" + fmt.Sprint(group))
+	if err == nil {
+		return text, nil
+	}
+
+	// Получение текста расписания, если текст не найден в кэше
+	text, err = GetTextSchedule(0, group, date.Format("02.01.2006"), typeweek, idweek, schedules, replaces)
 	if err != nil {
 		logger.Error("Ошибка при выполнении функции GetTextSchedule()", zap.Error(err))
 		return "", err
 	}
 
-	cacheText, err := cache.Rdb.Get(cache.Ctx, "GetTextSchedule_"+fmt.Sprint(group)).Result()
-	if err == nil && cacheText != "" {
-		return text, nil
+	// Проверка, есть ли текст уже в кэше
+	cacheText, err = getTextFromCache("GetTextSchedule_" + fmt.Sprint(group))
+	if err == nil && cacheText == text {
+		return cacheText, nil
 	}
 
+	// Сохранение текста в кэше
 	err = cache.Rdb.Set(cache.Ctx, "GetTextSchedule_"+fmt.Sprint(group), text, 24*time.Hour).Err()
 	if err != nil {
 		return "", err
