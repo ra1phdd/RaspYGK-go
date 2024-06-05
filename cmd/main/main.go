@@ -39,7 +39,9 @@ func main() {
 	// Инициализация кэша Redis
 	cache.Init(configuration.RedisAddr, configuration.RedisPort, configuration.RedisPassword)
 
-	go telegram.Init(configuration.TelegramAPI)
+	done := make(chan bool)
+	go telegram.Init(configuration.TelegramAPI, done)
+	<-done
 
 	go metrics.Init()
 

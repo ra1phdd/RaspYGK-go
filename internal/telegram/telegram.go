@@ -16,7 +16,7 @@ var (
 	buttons   models.Buttons
 )
 
-func Init(TelegramAPI string) {
+func Init(TelegramAPI string, done chan bool) {
 	pref := tele.Settings{
 		Token:  TelegramAPI,
 		Poller: &tele.LongPoller{Timeout: 1 * time.Second},
@@ -27,6 +27,8 @@ func Init(TelegramAPI string) {
 	if err != nil {
 		logger.Error("ошибка создания бота: ", zap.Error(err))
 	}
+
+	done <- true
 
 	HandlerBot()
 }

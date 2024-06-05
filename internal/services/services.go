@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"github.com/jmoiron/sqlx"
 	"raspygk/pkg/cache"
 	"raspygk/pkg/db"
 	"raspygk/pkg/logger"
@@ -86,10 +87,16 @@ func GetUserData(userId int64) (int, int, bool, error) {
 	return int(group.Int32), int(role.Int32), push.Bool, nil
 }
 
-func GetUserPUSH(idShift int, dataGroup []string) ([][]string, error) {
+func GetUserPUSH(idShift int, dataGroup []string, ignoreSettings bool) ([][]string, error) {
 	logger.Info("Получение данных о пользователях, у которых включены PUSH-уведомления", zap.Int("idShift", idShift))
 
-	rows, err := db.Conn.Queryx(`SELECT userid, "group" FROM users`)
+	var rows *sqlx.Rows
+	var err error
+	if ignoreSettings {
+		rows, err = db.Conn.Queryx(`SELECT userid, "group" FROM users`)
+	} else {
+		rows, err = db.Conn.Queryx(`SELECT userid, "group" FROM users WHERE push = true`)
+	}
 	if err != nil {
 		logger.Error("ошибка при выборке данных из таблицы users в функции GetUserPUSH", zap.Error(err))
 		return nil, err
@@ -144,10 +151,12 @@ func GetUserPUSH(idShift int, dataGroup []string) ([][]string, error) {
 			if err != nil {
 				logger.Error("Ошибка преобразования lesson в функции InsertData()")
 			}
-			groupValue := value["group"].(int64)
-			if int64(group) == groupValue {
-				matchFound = true
-				break
+			if value["group"] != nil {
+				groupValue := value["group"].(int64)
+				if int64(group) == groupValue {
+					matchFound = true
+					break
+				}
 			}
 		}
 		if matchFound {
@@ -158,6 +167,8 @@ func GetUserPUSH(idShift int, dataGroup []string) ([][]string, error) {
 			usersSlice = append(usersSlice, userInfo)
 		}
 	}
+
+	fmt.Println(usersSlice)
 
 	return usersSlice, nil
 }

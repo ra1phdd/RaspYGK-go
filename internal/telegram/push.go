@@ -3,16 +3,19 @@ package telegram
 import (
 	"fmt"
 	"raspygk/internal/services"
+	"raspygk/pkg/cache"
 	"raspygk/pkg/db"
 	"raspygk/pkg/logger"
 	"strconv"
+	"strings"
+	"time"
 
 	"go.uber.org/zap"
 	tele "gopkg.in/telebot.v3"
 )
 
 func SendToPush(idShift int) error {
-	data, err := services.GetUserPUSH(idShift, nil)
+	data, err := services.GetUserPUSH(idShift, nil, false)
 	if err != nil {
 		logger.Error("ошибка при получении пользователей с включенными PUSH в функции SendToPush: ", zap.Error(err))
 	}
@@ -28,6 +31,16 @@ func SendToPush(idShift int) error {
 			logger.Error("ошибка при получении расписания в функции createHandlerPUSH: ", zap.Error(err))
 		}
 
+		data, err := cache.Rdb.Get(cache.Ctx, "GetTextSchedulePUSH_"+fmt.Sprint(groupID)).Result()
+		if err == nil && data == schedule {
+			return nil
+		} else {
+			err = cache.Rdb.Set(cache.Ctx, "GetTextSchedulePUSH_"+fmt.Sprint(groupID), schedule, 24*time.Hour).Err()
+			if err != nil {
+				return err
+			}
+		}
+
 		logger.Info("userid", zap.Any("userid", item[0]), zap.Any("group", item[1]), zap.Any("schedule", schedule))
 		userID, err := strconv.Atoi(item[0])
 		if err != nil {
@@ -35,7 +48,7 @@ func SendToPush(idShift int) error {
 		}
 		chel := &tele.User{ID: int64(userID)}
 		_, err = b.Send(chel, schedule)
-		if err != nil {
+		if err != nil && !strings.Contains(error.Error(err), "bot was blocked") && !strings.Contains(error.Error(err), "chat not found") {
 			logger.Error("ошибка при отправке PUSH-уведомления пользователю: ", zap.Error(err))
 		}
 	}
@@ -72,7 +85,7 @@ func SendToAdmin(text string, userID int64, username string, idGroup int, role i
 }
 
 func SendToAll(text string) error {
-	data, err := services.GetUserPUSH(0, nil)
+	data, err := services.GetUserPUSH(0, nil, true)
 	if err != nil {
 		logger.Error("ошибка при получении пользователей с включенными PUSH в функции SendToPush: ", zap.Error(err))
 	}
