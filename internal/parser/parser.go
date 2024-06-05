@@ -185,7 +185,7 @@ func DataProccessing(result [][]string) [][]string {
 			copy(newItem, item)
 
 			newItem[2] = values2[i]
-			if newItem[2] != "" {
+			if newItem[2] == "" {
 				continue
 			}
 

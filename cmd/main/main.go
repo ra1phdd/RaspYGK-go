@@ -43,6 +43,11 @@ func main() {
 	go telegram.Init(configuration.TelegramAPI, done)
 	<-done
 
+	err = parser.Init()
+	if err != nil {
+		logger.Fatal("Ошибка в работе парсера", zap.Error(err))
+	}
+
 	go metrics.Init()
 
 	ticker := time.NewTicker(15 * time.Minute)
