@@ -299,9 +299,9 @@ func InsertData(date string, idWeek int, typeWeek int, idShift int) (bool, error
 			logger.Error("Ошибка преобразования lesson в функции InsertData()")
 		}
 
-		_, err = db.Conn.Exec(`INSERT INTO replaces ("group", lesson, discipline_rasp, discipline_replace, classroom, idarrays, date) VALUES ((SELECT id FROM groups WHERE name = $1), $2, $3, $4, $5, $6, $7)`, item[1], lesson, item[3], item[4], item[5], idArrays, date)
+		_, err = db.Conn.Exec(`INSERT INTO replaces ("group", lesson, discipline_rasp, discipline_replace, classroom, idarrays, date) VALUES ((SELECT id FROM groups WHERE name = $1), $2, $3, $4, $5, $6, $7)`, strings.TrimSpace(item[1]), lesson, item[3], item[4], item[5], idArrays, date)
 		if err != nil {
-			logger.Error("ошибка при вставке к БД arrays", zap.Error(err))
+			logger.Error("ошибка при вставке к БД arrays (name group - "+item[1]+")", zap.Error(err))
 			return false, err
 		}
 	}
