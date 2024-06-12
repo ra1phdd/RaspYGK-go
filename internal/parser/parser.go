@@ -56,6 +56,7 @@ func Init() error {
 	} else if checks[0] && checks[1] {
 		logger.Info("Замены обновлены у обоих смен")
 		idShift = 0
+		return nil
 	} else {
 		return nil
 	}

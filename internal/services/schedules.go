@@ -49,7 +49,6 @@ func GetLessonTime(lesson int64, classroom string, idweek int) (string, error) {
 
 func GetTextSchedule(typeId int64, idGroup int, date string, typeweek int, idweek int, schedules []map[string]interface{}, replaces []map[string]interface{}) (string, error) {
 	logger.Info("Получение текста расписания", zap.Int64("type_id", typeId), zap.Int("group", idGroup), zap.String("date", date), zap.Int("typeweek", typeweek), zap.Int("idweek", idweek))
-
 	daysOfWeek := []string{"", "понедельник", "вторник", "среду", "четверг", "пятницу", "субботу"}
 	if idweek < 1 || idweek > 6 {
 		logger.Error("Неизвестная неделя")
@@ -74,32 +73,39 @@ func GetTextSchedule(typeId int64, idGroup int, date string, typeweek int, idwee
 
 	text := "Расписание " + group + " на " + week + ", " + date + " (" + textWeek + "):\n"
 
+	if len(replaces) > len(schedules) {
+		diff := len(replaces) - len(schedules)
+		for i := 0; i < diff; i++ {
+			schedules = append(schedules, map[string]interface{}{
+				"lesson": int64(len(schedules) + i),
+			})
+		}
+	}
+
+	fmt.Println(len(replaces), " ", len(schedules))
+
 	for _, schedule := range schedules {
 		lesson := schedule["lesson"].(int64)
 		discipline := fmt.Sprint(schedule["discipline"])
 		teacher := fmt.Sprint(schedule["teacher"])
 		classroomSchedule := fmt.Sprint(schedule["classroom"])
 
-		if discipline == "<nil>" {
-			continue
-		}
-
 		replaceDone := false
 		for _, replace := range replaces {
 			lessonReplace := replace["lesson"].(int64)
 			disciplineReplace := fmt.Sprint(replace["discipline_replace"])
-			if disciplineReplace == "по расписанию " || disciplineReplace == "..." {
+			if disciplineReplace == "по расписанию" || disciplineReplace == "..." {
 				disciplineReplace = discipline
 			}
 			classroomReplace := fmt.Sprint(replace["classroom"])
 
-			if lesson != lessonReplace {
+			if lesson != lessonReplace && lesson > lessonReplace {
 				continue
 			}
 
-			lessonTime, err := GetLessonTime(lessonReplace, classroomReplace, idweek)
-			if err != nil {
-				logger.Error("ошибка при вызове функции GetLessonTime, когда замена есть", zap.Error(err))
+			lessonTime, errTime := GetLessonTime(lessonReplace, classroomReplace, idweek)
+			if errTime != nil {
+				logger.Error("ошибка при вызове функции GetLessonTime, когда замена есть", zap.Error(errTime))
 				return "", nil
 			}
 
