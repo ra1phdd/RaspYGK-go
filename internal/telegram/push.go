@@ -21,29 +21,29 @@ func SendToPush(idShift int) error {
 	}
 
 	for _, item := range data {
-		groupID, err := strconv.Atoi(item[1])
-		if err != nil {
+		groupID, errSchedule := strconv.Atoi(item[1])
+		if errSchedule != nil {
 			logger.Error("ошибка при преобразовании строки в int в функции createHandlerPUSH: ", zap.Error(err))
 		}
 
-		schedule, err := services.GetSchedule(groupID, 0)
-		if err != nil {
+		schedule, errSchedule := services.GetSchedule(groupID, 0)
+		if errSchedule != nil {
 			logger.Error("ошибка при получении расписания в функции createHandlerPUSH: ", zap.Error(err))
 		}
 
-		data, err := cache.Rdb.Get(cache.Ctx, "GetTextSchedulePUSH_"+fmt.Sprint(groupID)).Result()
-		if err == nil && data == schedule {
+		dataSchedule, errSchedule := cache.Rdb.Get(cache.Ctx, "GetTextSchedulePUSH_"+fmt.Sprint(groupID)).Result()
+		if errSchedule == nil && dataSchedule == schedule {
 			return nil
 		} else {
-			err = cache.Rdb.Set(cache.Ctx, "GetTextSchedulePUSH_"+fmt.Sprint(groupID), schedule, 24*time.Hour).Err()
-			if err != nil {
-				return err
+			errSchedule = cache.Rdb.Set(cache.Ctx, "GetTextSchedulePUSH_"+fmt.Sprint(groupID), schedule, 24*time.Hour).Err()
+			if errSchedule != nil {
+				return errSchedule
 			}
 		}
 
 		logger.Info("userid", zap.Any("userid", item[0]), zap.Any("group", item[1]), zap.Any("schedule", schedule))
-		userID, err := strconv.Atoi(item[0])
-		if err != nil {
+		userID, errSchedule := strconv.Atoi(item[0])
+		if errSchedule != nil {
 			logger.Error("ошибка при преобразовании строки в int в функции createHandlerPUSH: ", zap.Error(err))
 		}
 		chel := &tele.User{ID: int64(userID)}

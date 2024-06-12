@@ -56,6 +56,8 @@ func Init() error {
 	} else if checks[0] && checks[1] {
 		logger.Info("Замены обновлены у обоих смен")
 		idShift = 0
+	} else {
+		return nil
 	}
 
 	err := telegram.SendToPush(idShift)
@@ -174,6 +176,10 @@ func DataProccessing(result [][]string) [][]string {
 	var data [][]string
 
 	for _, item := range result {
+		if item[1] == "" || item[1] == " " {
+			continue
+		}
+
 		item[3] = strings.Replace(item[3], "...", "по расписанию", -1)
 
 		values2 := strings.Split(item[2], ",") // Номер пары
@@ -185,9 +191,6 @@ func DataProccessing(result [][]string) [][]string {
 			copy(newItem, item)
 
 			newItem[2] = values2[i]
-			if newItem[2] == "" {
-				continue
-			}
 
 			if i < len(values3) {
 				newItem[3] = values3[i]
