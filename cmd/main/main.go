@@ -2,14 +2,13 @@ package main
 
 import (
 	"log"
+	"raspygk/cmd/parser"
 	"raspygk/internal/config"
-	"raspygk/internal/parser"
 	"raspygk/internal/telegram"
 	"raspygk/pkg/cache"
 	"raspygk/pkg/db"
 	"raspygk/pkg/logger"
 	"raspygk/pkg/metrics"
-	"time"
 
 	"go.uber.org/zap"
 )
@@ -43,20 +42,10 @@ func main() {
 	go telegram.Init(configuration.TelegramAPI, done)
 	<-done
 
+	go metrics.Init()
+
 	err = parser.Init()
 	if err != nil {
 		logger.Fatal("Ошибка в работе парсера", zap.Error(err))
-	}
-
-	go metrics.Init()
-
-	ticker := time.NewTicker(15 * time.Minute)
-	defer ticker.Stop()
-
-	for range ticker.C {
-		err := parser.Init()
-		if err != nil {
-			logger.Fatal("Ошибка в работе парсера", zap.Error(err))
-		}
 	}
 }

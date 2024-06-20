@@ -6,6 +6,7 @@ import (
 	"raspygk/pkg/cache"
 	"raspygk/pkg/db"
 	"raspygk/pkg/logger"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -73,63 +74,34 @@ func GetTextSchedule(typeId int64, idGroup int, date string, typeweek int, idwee
 
 	text := "Расписание " + group + " на " + week + ", " + date + " (" + textWeek + "):\n"
 
-	if len(replaces) > len(schedules) {
-		diff := len(replaces) - len(schedules)
-		for i := 0; i < diff; i++ {
-			schedules = append(schedules, map[string]interface{}{
-				"lesson": int64(len(schedules) + i),
-			})
-		}
-	}
+	mergedMap := mergeSchedules(schedules, replaces)
+	for _, item := range mergedMap {
+		fmt.Println(item)
 
-	fmt.Println(len(replaces), " ", len(schedules))
+		lesson := item["lesson"].(int64)
+		discipline := fmt.Sprint(item["discipline"])
+		disciplineReplace := fmt.Sprint(item["discipline_replace"])
+		teacher := fmt.Sprint(item["teacher"])
+		classroom := fmt.Sprint(item["classroom"])
 
-	for _, schedule := range schedules {
-		lesson := schedule["lesson"].(int64)
-		discipline := fmt.Sprint(schedule["discipline"])
-		teacher := fmt.Sprint(schedule["teacher"])
-		classroomSchedule := fmt.Sprint(schedule["classroom"])
-
-		replaceDone := false
-		for _, replace := range replaces {
-			lessonReplace := replace["lesson"].(int64)
-			disciplineReplace := fmt.Sprint(replace["discipline_replace"])
-			if disciplineReplace == "по расписанию" || disciplineReplace == "..." {
-				disciplineReplace = discipline
-			}
-			classroomReplace := fmt.Sprint(replace["classroom"])
-
-			if lesson != lessonReplace && lesson > lessonReplace {
-				continue
-			}
-
-			lessonTime, errTime := GetLessonTime(lessonReplace, classroomReplace, idweek)
-			if errTime != nil {
-				logger.Error("ошибка при вызове функции GetLessonTime, когда замена есть", zap.Error(errTime))
-				return "", nil
-			}
-
-			if strings.ToLower(strings.TrimSpace(disciplineReplace)) != "снято" {
-				text += strconv.FormatInt(lessonReplace, 10) + " пара [" + classroomReplace + "] (" + lessonTime + ") " + disciplineReplace + " (❗замена)\n"
-			} else {
-				text += strconv.FormatInt(lessonReplace, 10) + " пара - снято (❗замена)\n"
-			}
-
-			replaceDone = true
-			break
-		}
-
-		if replaceDone {
-			continue
-		}
-
-		lessonTime, err := GetLessonTime(lesson, classroomSchedule, idweek)
-		if err != nil {
-			logger.Error("ошибка при вызове функции GetLessonTime, когда замены нет", zap.Error(err))
+		lessonTime, errTime := GetLessonTime(lesson, classroom, idweek)
+		if errTime != nil {
+			logger.Error("ошибка при вызове функции GetLessonTime, когда замена есть", zap.Error(errTime))
 			return "", nil
 		}
 
-		text += strconv.FormatInt(lesson, 10) + " пара [" + classroomSchedule + "] (" + lessonTime + ") " + discipline + " (" + teacher + ")\n"
+		if fmt.Sprint(item["source"]) == "schedules" {
+			text += strconv.FormatInt(lesson, 10) + " пара [" + classroom + "] (" + lessonTime + ") " + discipline + " (" + teacher + ")\n"
+		} else if item["lesson"].(int64) == -1 {
+			text += disciplineReplace + " (❗замена)\n"
+			break
+		} else {
+			if strings.ToLower(strings.TrimSpace(disciplineReplace)) != "снято" {
+				text += strconv.FormatInt(lesson, 10) + " пара [" + classroom + "] (" + lessonTime + ") " + disciplineReplace + " (❗замена)\n"
+			} else {
+				text += strconv.FormatInt(lesson, 10) + " пара - снято (❗замена)\n"
+			}
+		}
 	}
 
 	if typeId == 0 || typeId == 2 {
@@ -449,4 +421,52 @@ func FetchSchedules(group int, idweek int, typeweek int) ([]map[string]interface
 	}
 
 	return schedulesSlice, nil
+}
+
+func mergeSchedules(schedules, replaces []map[string]interface{}) []map[string]interface{} {
+	// Создаем новую мапу для объединения данных
+	mergedMap := make(map[int64]map[string]interface{})
+
+	if len(replaces) > 0 {
+		if replaces[0]["lesson"].(int64) == -1 {
+			lesson := replaces[0]["lesson"].(int64)
+			mergedMap[lesson] = replaces[0]
+
+			result := make([]map[string]interface{}, 0, 1)
+			result = append(result, mergedMap[lesson])
+
+			return result
+		}
+	}
+
+	// Заполняем мапу значениями из schedules
+	for _, schedule := range schedules {
+		lesson := schedule["lesson"].(int64)
+		schedule["source"] = "schedules"
+		mergedMap[lesson] = schedule
+	}
+
+	// Обновляем/добавляем значения из replaces
+	for _, replace := range replaces {
+		lesson := replace["lesson"].(int64)
+		replace["source"] = "replaces"
+		mergedMap[lesson] = replace
+	}
+
+	// Извлекаем ключи (уроки) и сортируем их
+	lessons := make([]int64, 0, len(mergedMap))
+	for lesson := range mergedMap {
+		lessons = append(lessons, lesson)
+	}
+	sort.Slice(lessons, func(i, j int) bool {
+		return lessons[i] < lessons[j]
+	})
+
+	// Создаем результирующий слайс
+	result := make([]map[string]interface{}, 0, len(lessons))
+	for _, lesson := range lessons {
+		result = append(result, mergedMap[lesson])
+	}
+
+	return result
 }

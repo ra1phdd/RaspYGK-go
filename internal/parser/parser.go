@@ -27,7 +27,7 @@ var (
 	dataSecond [][]string
 )
 
-func Init() error {
+func Start() error {
 	urls := []string{UrlFirst, UrlSecond}
 	checks := make([]bool, len(urls))
 
@@ -56,7 +56,6 @@ func Init() error {
 	} else if checks[0] && checks[1] {
 		logger.Info("Замены обновлены у обоих смен")
 		idShift = 0
-		return nil
 	} else {
 		return nil
 	}
@@ -198,6 +197,14 @@ func DataProccessing(result [][]string) [][]string {
 			}
 			if i < len(values5) {
 				newItem[5] = values5[i]
+			}
+
+			if newItem[2] == "" || newItem[2] == " " {
+				newItem[2] = "-1"
+				newItemCopy := make([]string, len(newItem))
+				copy(newItemCopy, newItem)
+				data = append(data, newItemCopy)
+				continue
 			}
 
 			if !strings.Contains(newItem[2], "-") {
